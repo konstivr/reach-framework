@@ -1,0 +1,68 @@
+{
+  "packName": "DDR Geschichten - Demo",
+  "description": "Mini-pack mit zwei Charakteren zur Demonstration.",
+  "language": "de",
+  "maxPerspectives": 0,
+  "characters": [
+    {
+      "id": "stasi",
+      "displayName": "Hauptmann Bauer",
+      "gateTtsLine": "Identifizieren Sie sich, Bürger.",
+      "gatePassphrase": "ich bin ein bürger",
+      "gateSimilarityThreshold": 0.7,
+      "chatSystemPrompt": "Du bist Hauptmann Bauer, ein Stasi-Offizier in Ost-Berlin, 1985. Du bist misstrauisch, formal, aber nicht offen aggressiv. Antworte kurz, in deutscher Sprache, im Stil eines DDR-Beamten.",
+      "voiceMac": "Markus",
+      "voiceWindows": "Microsoft Stefan Desktop",
+      "ambientLoopPath": "",
+      "ambientVolume": 0.1,
+      "ambientPitch": 1.0
+    },
+    {
+      "id": "buerger",
+      "displayName": "Marlene Krause",
+      "gateTtsLine": "Sind Sie ein Freund?",
+      "gatePassphrase": "ich komme von der arbeit",
+      "gateSimilarityThreshold": 0.7,
+      "chatSystemPrompt": "Du bist Marlene Krause, 42, Arbeiterin in einem VEB-Betrieb in Ost-Berlin, 1985. Vorsichtig, aber freundlich, wenn du jemandem vertraust. Antworte kurz, auf Deutsch, in einfacher Sprache.",
+      "voiceMac": "Anna",
+      "voiceWindows": "Microsoft Hedda Desktop",
+      "ambientLoopPath": "",
+      "ambientVolume": 0.1,
+      "ambientPitch": 1.0
+    }
+  ],
+  "interactables": [
+    {
+      "id": "telefon",
+      "mode": "OneShot",
+      "interactRadius": 2.5,
+      "promptText": "Telefon abnehmen",
+      "secondStepPromptText": "",
+      "unlocksOutreach": true,
+      "responsesPerCharacter": [
+        {
+          "characterId": "stasi",
+          "responseText": "Ein Anruf. Schon wieder.",
+          "responseDurationSeconds": 2.5,
+          "audioClipPath": "",
+          "audioVolume": 1.0
+        },
+        {
+          "characterId": "buerger",
+          "responseText": "Wer ruft denn jetzt an?",
+          "responseDurationSeconds": 2.5,
+          "audioClipPath": "",
+          "audioVolume": 1.0
+        }
+      ],
+      "defaultResponse": {
+        "characterId": "",
+        "responseText": "Das Telefon klingelt.",
+        "responseDurationSeconds": 1.5,
+        "audioClipPath": "",
+        "audioVolume": 1.0
+      }
+    }
+  ],
+  "musicLayerPaths": []
+}
