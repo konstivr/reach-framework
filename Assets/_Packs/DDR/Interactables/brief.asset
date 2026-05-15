@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 334229f26435a4b34b988a7b2f3c1756, type: 3}
+  m_Name: brief
+  m_EditorClassIdentifier: Reach.Framework::Reach.Framework.Core.InteractableObjectDefinition
+  objectPrefab: {fileID: 0}
+  mode: 0
+  interactRadius: 2
+  promptText: Brief lesen
+  secondStepPromptText: 
+  responsesPerCharacter:
+  - character: {fileID: 11400000, guid: 19a4b3b536db9472fb70f348ad7c0111, type: 2}
+    responseText: Westabsender. Untervorgang einleiten.
+    responseDurationSeconds: 2.5
+    audioClip: {fileID: 0}
+    firstStepAudioClip: {fileID: 0}
+    audioVolume: 1
+  - character: {fileID: 11400000, guid: 2f18218059ad54616bf8a0a9bdf7f520, type: 2}
+    responseText: Von meiner Schwester. Sie schreibt nie viel.
+    responseDurationSeconds: 3
+    audioClip: {fileID: 0}
+    firstStepAudioClip: {fileID: 0}
+    audioVolume: 1
+  - character: {fileID: 11400000, guid: a199ff210a56545938efceb8d561b6fa, type: 2}
+    responseText: "Den hier h\xE4tte ich nicht \xF6ffnen d\xFCrfen."
+    responseDurationSeconds: 2.5
+    audioClip: {fileID: 0}
+    firstStepAudioClip: {fileID: 0}
+    audioVolume: 1
+  defaultResponse:
+    character: {fileID: 0}
+    responseText: "Ein Brief, unge\xF6ffnet."
+    responseDurationSeconds: 1.5
+    audioClip: {fileID: 0}
+    firstStepAudioClip: {fileID: 0}
+    audioVolume: 1
+  unlocksOutreach: 1

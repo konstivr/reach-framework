@@ -10,13 +10,11 @@ using Reach.Framework.Interaction;
 namespace Reach.Framework.Dialogue
 {
     /// <summary>
-    /// Handles microphone recording when player presses Speak.
-    /// Records to a temp WAV file and routes it to:
-    ///   - GateSystem (if waiting for passphrase)
-    ///   - DialogueManager (for chat — coming in later häppchen)
-    ///
-    /// AutoSend pattern: press once → speak → after N seconds it auto-stops and routes.
-    /// No second click needed. Works around gamepad button-reading edge cases.
+    /// Hold-to-talk microphone input.
+    ///   - Press & hold Speak       → start recording
+    ///   - Release Speak (≥ minHold) → stop + route
+    ///   - Release Speak (< minHold) → discard, show "too short" hint
+    ///   - maxRecord seconds        → hard auto-stop + route
     /// </summary>
     public class SpeechInput : MonoBehaviour
     {
@@ -27,17 +25,18 @@ namespace Reach.Framework.Dialogue
         [Tooltip("Sample rate for recording.")]
         public int frequency = 16000;
 
-        [Header("AutoSend")]
-        [Tooltip("Auto-stop and route N seconds after recording started.")]
-        public float autoSendSeconds = 6f;
+        [Header("Hold Timing")]
+        [Tooltip("Minimum hold duration. Recordings shorter than this are discarded.")]
+        public float minHoldSeconds = 3f;
 
-        [Tooltip("Discard recordings shorter than this.")]
-        public float minRecordSeconds = 0.25f;
+        [Tooltip("Maximum recording length. Auto-stop and route when reached.")]
+        public float maxRecordSeconds = 15f;
 
         [Header("HUD Texts")]
-        [TextArea(1, 3)] public string recordingPrompt = "Speak and wait...";
+        [TextArea(1, 3)] public string recordingPrompt = "Speak (halten)...";
         [TextArea(1, 3)] public string sendingPrompt = "Sending...";
         [TextArea(1, 3)] public string canceledPrompt = "Canceled.";
+        [TextArea(1, 3)] public string tooShortPrompt = "Zu kurz — länger halten.";
 
         [Header("Debug")]
         public bool debugLogs = true;
@@ -76,13 +75,12 @@ namespace Reach.Framework.Dialogue
                 return;
             }
 
-            // Start recording on Speak press
+            // Start on press
             if (input.SpeakDown && !_isRecording && !_isStopping)
             {
                 bool gateWaiting = gate != null && gate.IsWaitingForPassphrase;
                 bool gateBusy = gate != null && gate.IsGateBusy;
 
-                // Block speak if gate is busy but not waiting
                 if (gateBusy && !gateWaiting)
                 {
                     if (debugLogs) Debug.Log("[SpeechInput] Blocked: gate busy (not waiting).");
@@ -92,12 +90,32 @@ namespace Reach.Framework.Dialogue
                 StartRecording();
             }
 
-            // AutoSend
+            // While recording: handle release + max-length cap
             if (_isRecording && !_isStopping)
             {
                 float elapsed = Time.time - _recordStartTime;
-                if (elapsed >= autoSendSeconds && elapsed >= minRecordSeconds)
+
+                // Released
+                if (!input.SpeakHeld)
                 {
+                    if (elapsed < minHoldSeconds)
+                    {
+                        if (debugLogs) Debug.Log($"[SpeechInput] Released too early ({elapsed:F2}s < {minHoldSeconds}s) — discarding.");
+                        DiscardRecording();
+                        if (hud != null && hud.IsFree)
+                            hud.SetTimed(tooShortPrompt, 1.2f);
+                    }
+                    else
+                    {
+                        _ = StopAndRouteAsync();
+                    }
+                    return;
+                }
+
+                // Hard cap
+                if (elapsed >= maxRecordSeconds)
+                {
+                    if (debugLogs) Debug.Log("[SpeechInput] Max record length reached — auto-routing.");
                     _ = StopAndRouteAsync();
                 }
             }
@@ -120,18 +138,16 @@ namespace Reach.Framework.Dialogue
             _recordStartTime = Time.time;
             microphoneDevice = device;
 
-            // Suspend gate timeout while we record
             GameContext.Instance?.Gate?.SetTimeoutSuspended(true);
 
-            // HUD: recording feedback
             var hud = GameContext.Instance?.Hud;
             if (hud != null && hud.IsFree)
                 hud.SetSticky(recordingPrompt);
 
-            int lenSec = Mathf.CeilToInt(autoSendSeconds + 0.5f);
+            int lenSec = Mathf.CeilToInt(maxRecordSeconds + 0.5f);
             _recording = Microphone.Start(device, false, lenSec, frequency);
 
-            if (debugLogs) Debug.Log($"[SpeechInput] START device='{device}' freq={frequency}");
+            if (debugLogs) Debug.Log($"[SpeechInput] START device='{device}' freq={frequency} minHold={minHoldSeconds}s");
         }
 
         async Task StopAndRouteAsync()
@@ -153,7 +169,6 @@ namespace Reach.Framework.Dialogue
                 return;
             }
 
-            // Save to WAV
             float[] data = new float[pos];
             _recording.GetData(data, 0);
 
@@ -171,7 +186,6 @@ namespace Reach.Framework.Dialogue
 
             if (debugLogs) Debug.Log($"[SpeechInput] STOP -> {wavPath}");
 
-            // Route
             var ctx = GameContext.Instance;
             var gate = ctx?.Gate;
             var hud = ctx?.Hud;
@@ -184,11 +198,8 @@ namespace Reach.Framework.Dialogue
             else if (ctx?.Dialogue != null)
             {
                 if (debugLogs) Debug.Log("[SpeechInput] Route -> Chat");
-
-                // HUD: feedback while we wait for STT/LLM/TTS
                 if (hud != null && hud.IsFree)
                     hud.SetSticky(sendingPrompt);
-
                 await ctx.Dialogue.PlayerSpokeAsync(wavPath);
             }
             else
@@ -199,7 +210,20 @@ namespace Reach.Framework.Dialogue
             SafeDelete(wavPath);
             _isStopping = false;
 
-            // Clear our sticky if still active; Router will repopulate idle/prompt next frame
+            if (hud != null && hud.IsSticky)
+                hud.ClearSticky();
+        }
+
+        void DiscardRecording()
+        {
+            try { if (_isRecording) Microphone.End(microphoneDevice); } catch { }
+            _isRecording = false;
+            _isStopping = false;
+            _recording = null;
+
+            GameContext.Instance?.Gate?.SetTimeoutSuspended(false);
+
+            var hud = GameContext.Instance?.Hud;
             if (hud != null && hud.IsSticky)
                 hud.ClearSticky();
         }

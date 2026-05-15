@@ -74,6 +74,9 @@ namespace Reach.Framework.InputSys
         /// <summary>Speak: true ONLY in the frame it was pressed.</summary>
         public bool SpeakDown { get; private set; }
 
+        /// <summary>Speak: true while the button is held down. (Continuous)</summary>
+        public bool SpeakHeld { get; private set; }
+
         /// <summary>Cancel: true ONLY in the frame it was pressed.</summary>
         public bool CancelDown { get; private set; }
 
@@ -157,6 +160,7 @@ namespace Reach.Framework.InputSys
 
             InteractDown = _interact != null && _interact.WasPressedThisFrame();
             SpeakDown    = _speak    != null && _speak.WasPressedThisFrame();
+            SpeakHeld    = _speak    != null && _speak.IsPressed();
             CancelDown   = _cancel   != null && _cancel.WasPressedThisFrame();
             PauseDown    = _pause    != null && _pause.WasPressedThisFrame();
         }

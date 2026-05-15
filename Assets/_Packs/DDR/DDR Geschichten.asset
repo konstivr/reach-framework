@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d3463c91a1f54588ab5db1b9c896804, type: 3}
+  m_Name: DDR Geschichten
+  m_EditorClassIdentifier: Reach.Framework::Reach.Framework.Core.StoryPack
+  packName: DDR Geschichten
+  description: 'Drei Perspektiven aus Ost-Berlin, 1985: ein Stasi-Offizier, eine
+    Arbeiterin, ein junger IM. Jeder sieht denselben Alltag, aber durch eine andere
+    Linse.'
+  language: de
+  characters:
+  - {fileID: 11400000, guid: 19a4b3b536db9472fb70f348ad7c0111, type: 2}
+  - {fileID: 11400000, guid: 2f18218059ad54616bf8a0a9bdf7f520, type: 2}
+  - {fileID: 11400000, guid: a199ff210a56545938efceb8d561b6fa, type: 2}
+  musicLayers: []
+  maxPerspectives: 0

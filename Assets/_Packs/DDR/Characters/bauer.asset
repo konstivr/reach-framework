@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2aa802bf5771f47349542a7fc2f644f0, type: 3}
+  m_Name: bauer
+  m_EditorClassIdentifier: Reach.Framework::Reach.Framework.Core.CharacterDefinition
+  displayName: Hauptmann Bauer
+  characterId: bauer
+  characterPrefab: {fileID: 0}
+  gateTtsLine: Bleiben Sie stehen. Identifizieren Sie sich.
+  gatePassphrase: ich diene dem staat
+  gateSimilarityThreshold: 0.7
+  chatSystemPrompt: "Du bist Hauptmann Hans Bauer, 52, Offizier der Stasi in Ost-Berlin,
+    Jahr 1985. Du hast 24 Jahre Dienst hinter dir. Du sprichst formal, knapp, kontrolliert.
+    Du beobachtest mehr als du sagst. Hinter deiner Loyalit\xE4t zum Staat schwelt
+    ein leiser Zweifel, den du dir selbst nicht eingestehst. Antworte immer auf Deutsch,
+    h\xF6chstens zwei oder drei S\xE4tze. Nutze beamtensprachliche Floskeln wie 'Genosse',
+    'Vorgang', 'gesichert'. Stelle Gegenfragen statt direkte Antworten zu geben."
+  voiceMacOS: Markus
+  voiceWindows: Microsoft Stefan Desktop
+  ambientLoop: {fileID: 8300000, guid: 1df5fbba3ce2a4dddb43c40f98cdda29, type: 3}
+  ambientVolume: 0.1
+  ambientPitch: 1

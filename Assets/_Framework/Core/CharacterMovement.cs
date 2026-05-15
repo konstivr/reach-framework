@@ -7,16 +7,13 @@ namespace Reach.Framework.Core
     /// Player movement when this character is controlled.
     /// Reads filtered input from GameContext.Input.
     /// Disabled by PossessableCharacter when the character is uncontrolled.
-    ///
-    /// Camera-relative third-person movement: WASD/stick moves in the direction
-    /// the camera is facing, character rotates toward movement direction.
     /// </summary>
     [RequireComponent(typeof(CharacterController))]
     public class CharacterMovement : MonoBehaviour
     {
         [Header("Speed")]
-        public float walkSpeed   = 4.5f;
-        public float sprintSpeed = 6.0f;
+        public float walkSpeed   = 2.0f;
+        public float sprintSpeed = 5.335f;
 
         [Tooltip("How fast the character turns to face movement direction (deg/sec).")]
         public float turnSpeed = 540f;
@@ -33,17 +30,21 @@ namespace Reach.Framework.Core
         public LayerMask groundLayers = ~0;
 
         [Header("Camera")]
-        [Tooltip("If true: movement is relative to the main camera's yaw (classic 3rd-person). " +
-                 "If false: movement is relative to character's own forward (tank controls).")]
+        [Tooltip("If true: movement is relative to the main camera's yaw (classic 3rd-person).")]
         public bool cameraRelative = true;
 
-        // ============================================================
-        // State
-        // ============================================================
+        [Header("Animator (auto-resolved)")]
+        public Animator animator;
+
+        // Animator parameter hashes
+        int _animIDSpeed;
+        int _animIDGrounded;
+        int _animIDMotionSpeed;
 
         CharacterController _controller;
         Camera _mainCamera;
         float _currentSpeed;
+        float _animSpeedBlend;
         float _verticalVelocity;
         bool _grounded;
 
@@ -53,13 +54,24 @@ namespace Reach.Framework.Core
         {
             _controller = GetComponent<CharacterController>();
             _mainCamera = Camera.main;
+            if (animator == null) animator = GetComponent<Animator>();
+            if (animator == null) animator = GetComponentInChildren<Animator>();
+
+            AssignAnimationIDs();
         }
 
         void OnEnable()
         {
-            // Reset state to avoid carrying over momentum from when component was disabled
             _currentSpeed = 0f;
+            _animSpeedBlend = 0f;
             _verticalVelocity = 0f;
+        }
+
+        void AssignAnimationIDs()
+        {
+            _animIDSpeed       = Animator.StringToHash("Speed");
+            _animIDGrounded    = Animator.StringToHash("Grounded");
+            _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
         }
 
         void Update()
@@ -67,20 +79,18 @@ namespace Reach.Framework.Core
             var input = GameContext.Instance?.Input;
             if (input == null) return;
 
-            // TEMP DEBUG
-            if (input.Move.sqrMagnitude > 0.01f)
-                Debug.Log($"[Movement] Input received: {input.Move}, controlled: {enabled}");
-
             GroundedCheck();
             ApplyGravity();
             ApplyMovement(input);
         }
-    
 
         void GroundedCheck()
         {
             Vector3 spherePos = new Vector3(transform.position.x, transform.position.y - groundedOffset, transform.position.z);
             _grounded = Physics.CheckSphere(spherePos, groundedRadius, groundLayers, QueryTriggerInteraction.Ignore);
+
+            if (animator != null)
+                animator.SetBool(_animIDGrounded, _grounded);
         }
 
         void ApplyGravity()
@@ -98,7 +108,6 @@ namespace Reach.Framework.Core
             float targetSpeed = input.Sprint ? sprintSpeed : walkSpeed;
             if (m == Vector2.zero) targetSpeed = 0f;
 
-            // Smooth current speed toward target
             float currentHoriz = new Vector3(_controller.velocity.x, 0f, _controller.velocity.z).magnitude;
             float speedOffset = 0.1f;
             float inputMag = m.magnitude;
@@ -113,7 +122,10 @@ namespace Reach.Framework.Core
                 _currentSpeed = targetSpeed;
             }
 
-            // Compute world direction
+            // Smoothed animation blend
+            _animSpeedBlend = Mathf.Lerp(_animSpeedBlend, targetSpeed, Time.deltaTime * speedChangeRate);
+            if (_animSpeedBlend < 0.01f) _animSpeedBlend = 0f;
+
             Vector3 moveWorld;
             if (cameraRelative && _mainCamera != null)
             {
@@ -131,7 +143,6 @@ namespace Reach.Framework.Core
                 moveWorld = transform.TransformDirection(new Vector3(m.x, 0f, m.y));
             }
 
-            // Rotate character toward movement direction
             if (moveWorld.sqrMagnitude > _threshold)
             {
                 float desiredYaw = Mathf.Atan2(moveWorld.x, moveWorld.z) * Mathf.Rad2Deg;
@@ -145,6 +156,13 @@ namespace Reach.Framework.Core
                 moveDir * (_currentSpeed * Time.deltaTime) +
                 Vector3.up * (_verticalVelocity * Time.deltaTime)
             );
+
+            // Animator updates
+            if (animator != null)
+            {
+                animator.SetFloat(_animIDSpeed, _animSpeedBlend);
+                animator.SetFloat(_animIDMotionSpeed, inputMag);
+            }
         }
     }
 }

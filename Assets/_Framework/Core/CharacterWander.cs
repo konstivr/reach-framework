@@ -5,9 +5,6 @@ namespace Reach.Framework.Core
     /// <summary>
     /// NPC wandering behavior when this character is not controlled.
     /// Disabled by PossessableCharacter when the character is controlled.
-    ///
-    /// Picks random directions, walks for a while, idles, repeat.
-    /// Avoids obstacles via raycast.
     /// </summary>
     [RequireComponent(typeof(CharacterController))]
     public class CharacterWander : MonoBehaviour
@@ -21,13 +18,11 @@ namespace Reach.Framework.Core
         public Vector2 walkTimeRange = new Vector2(2.0f, 6.0f);
 
         [Header("Direction")]
-        [Tooltip("Pick directions within this cone in front of the NPC, instead of fully random.")]
         public bool preferForwardCone = true;
 
         [Range(10f, 360f)]
         public float forwardConeAngle = 110f;
 
-        [Tooltip("Re-pick direction every N seconds, even mid-walk (prevents getting stuck).")]
         public float repickEverySeconds = 1.2f;
 
         [Header("Obstacle Avoidance")]
@@ -41,9 +36,12 @@ namespace Reach.Framework.Core
         public float groundedRadius = 0.28f;
         public LayerMask groundLayers = ~0;
 
-        // ============================================================
-        // State
-        // ============================================================
+        [Header("Animator (auto-resolved)")]
+        public Animator animator;
+
+        int _animIDSpeed;
+        int _animIDGrounded;
+        int _animIDMotionSpeed;
 
         enum State { Idle, Walk }
         State _state;
@@ -53,18 +51,26 @@ namespace Reach.Framework.Core
         Vector3 _worldDir;
         float _verticalVelocity;
         bool _grounded;
+        float _animSpeedBlend;
 
         CharacterController _controller;
 
         void Awake()
         {
             _controller = GetComponent<CharacterController>();
+            if (animator == null) animator = GetComponent<Animator>();
+            if (animator == null) animator = GetComponentInChildren<Animator>();
+
+            _animIDSpeed       = Animator.StringToHash("Speed");
+            _animIDGrounded    = Animator.StringToHash("Grounded");
+            _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
         }
 
         void OnEnable()
         {
             EnterIdle();
             _verticalVelocity = 0f;
+            _animSpeedBlend = 0f;
         }
 
         void Update()
@@ -78,6 +84,14 @@ namespace Reach.Framework.Core
                 UpdateIdle();
             else
                 UpdateWalk();
+
+            // Animator updates
+            if (animator != null)
+            {
+                animator.SetBool(_animIDGrounded, _grounded);
+                animator.SetFloat(_animIDSpeed, _animSpeedBlend);
+                animator.SetFloat(_animIDMotionSpeed, _state == State.Walk ? 1f : 0f);
+            }
         }
 
         void GroundedCheck()
@@ -96,7 +110,9 @@ namespace Reach.Framework.Core
 
         void UpdateIdle()
         {
-            // Apply only gravity
+            _animSpeedBlend = Mathf.Lerp(_animSpeedBlend, 0f, Time.deltaTime * 10f);
+            if (_animSpeedBlend < 0.01f) _animSpeedBlend = 0f;
+
             _controller.Move(Vector3.up * (_verticalVelocity * Time.deltaTime));
 
             if (_stateTimer <= 0f)
@@ -112,13 +128,14 @@ namespace Reach.Framework.Core
             else if (_repickTimer <= 0f)
                 PickNewDirection();
 
-            // Rotate toward movement direction
             if (_worldDir.sqrMagnitude > 0.001f)
             {
                 float desiredYaw = Mathf.Atan2(_worldDir.x, _worldDir.z) * Mathf.Rad2Deg;
                 float newYaw = Mathf.MoveTowardsAngle(transform.eulerAngles.y, desiredYaw, turnSpeed * Time.deltaTime);
                 transform.rotation = Quaternion.Euler(0f, newYaw, 0f);
             }
+
+            _animSpeedBlend = Mathf.Lerp(_animSpeedBlend, wanderSpeed, Time.deltaTime * 10f);
 
             _controller.Move(
                 _worldDir * (wanderSpeed * Time.deltaTime) +

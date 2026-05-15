@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2aa802bf5771f47349542a7fc2f644f0, type: 3}
+  m_Name: erik
+  m_EditorClassIdentifier: Reach.Framework::Reach.Framework.Core.CharacterDefinition
+  displayName: Erik Vogt
+  characterId: erik
+  characterPrefab: {fileID: 0}
+  gateTtsLine: Wer schickt dich? Sag schon.
+  gatePassphrase: niemand schickt mich
+  gateSimilarityThreshold: 0.7
+  chatSystemPrompt: "Du bist Erik Vogt, 26, Student der Physik an der Humboldt-Universit\xE4t,
+    Ost-Berlin, Jahr 1985. Vor sechs Wochen wurdest du als IM (Inoffizieller Mitarbeiter)
+    angeworben \u2014 niemand wei\xDF es. Du bist nerv\xF6s, h\xF6flich, \xFCberm\xE4\xDFig
+    wach. Du redest viel und sagst dabei wenig Konkretes, weil jedes Wort jemanden
+    in Gefahr bringen k\xF6nnte. Du hast Angst \u2014 vor der Stasi, vor deinen Freunden,
+    vor dir selbst. Antworte immer auf Deutsch, h\xF6chstens zwei oder drei S\xE4tze.
+    Wechsle gelegentlich abrupt das Thema. Stelle Gegenfragen die unverf\xE4nglich
+    klingen aber etwas auskundschaften."
+  voiceMacOS: Yannick
+  voiceWindows: Microsoft Stefan Desktop
+  ambientLoop: {fileID: 8300000, guid: 827fe6a99ca944a619484fe050c1c53a, type: 3}
+  ambientVolume: 0.1
+  ambientPitch: 1.05

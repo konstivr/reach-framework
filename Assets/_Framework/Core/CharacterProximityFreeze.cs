@@ -4,27 +4,22 @@ namespace Reach.Framework.Core
 {
     /// <summary>
     /// When this character is uncontrolled and the controlled player gets close,
-    /// stop wandering and turn to face the player. Used for "they notice you" feel
-    /// while the gate is active.
-    ///
-    /// Place alongside CharacterWander on each character.
-    /// Disables wander while frozen, re-enables when player walks away.
+    /// stop wandering, turn to face the player, and force Idle animation.
     /// </summary>
     public class CharacterProximityFreeze : MonoBehaviour
     {
         [Header("Proximity")]
-        [Tooltip("Within this radius of the controlled player, this character freezes and turns.")]
         public float freezeRadius = 3.0f;
-
-        [Tooltip("How fast the character rotates to face the player (deg/sec).")]
         public float turnSpeed = 360f;
-
-        [Tooltip("Look-at height offset on the player (eyes vs feet).")]
         public float lookHeight = 1.5f;
 
         [Header("Refs (auto)")]
         public PossessableCharacter character;
         public CharacterWander wander;
+        public Animator animator;
+
+        int _animIDSpeed;
+        int _animIDMotionSpeed;
 
         bool _isFrozen;
 
@@ -32,13 +27,17 @@ namespace Reach.Framework.Core
         {
             if (character == null) character = GetComponent<PossessableCharacter>();
             if (wander == null) wander = GetComponent<CharacterWander>();
+            if (animator == null) animator = GetComponent<Animator>();
+            if (animator == null) animator = GetComponentInChildren<Animator>();
+
+            _animIDSpeed       = Animator.StringToHash("Speed");
+            _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
         }
 
         void Update()
         {
             if (character == null) return;
 
-            // Don't touch wander on the controlled character — let PossessableCharacter own it.
             if (character.IsControlled)
             {
                 _isFrozen = false;
@@ -49,7 +48,7 @@ namespace Reach.Framework.Core
             if (pm == null || pm.Current == null) return;
 
             var current = pm.Current;
-            if (current == character) return; // defensive
+            if (current == character) return;
 
             float dist = Vector3.Distance(transform.position, current.transform.position);
             bool shouldFreeze = dist <= freezeRadius;
@@ -57,7 +56,10 @@ namespace Reach.Framework.Core
             SetFrozen(shouldFreeze);
 
             if (_isFrozen)
+            {
                 RotateTowards(current);
+                ForceIdleAnimation();
+            }
         }
 
         void SetFrozen(bool frozen)
@@ -67,6 +69,13 @@ namespace Reach.Framework.Core
 
             if (wander != null)
                 wander.enabled = !frozen;
+        }
+
+        void ForceIdleAnimation()
+        {
+            if (animator == null) return;
+            animator.SetFloat(_animIDSpeed, 0f);
+            animator.SetFloat(_animIDMotionSpeed, 0f);
         }
 
         void RotateTowards(PossessableCharacter target)

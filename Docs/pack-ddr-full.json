@@ -1,0 +1,176 @@
+{
+  "packName": "DDR Geschichten",
+  "description": "Drei Perspektiven aus Ost-Berlin, 1985: ein Stasi-Offizier, eine Arbeiterin, ein junger IM. Jeder sieht denselben Alltag, aber durch eine andere Linse.",
+  "language": "de",
+  "maxPerspectives": 0,
+  "characters": [
+    {
+      "id": "bauer",
+      "displayName": "Hauptmann Bauer",
+      "gateTtsLine": "Bleiben Sie stehen. Identifizieren Sie sich.",
+      "gatePassphrase": "ich diene dem staat",
+      "gateSimilarityThreshold": 0.7,
+      "chatSystemPrompt": "Du bist Hauptmann Hans Bauer, 52, Offizier der Stasi in Ost-Berlin, Jahr 1985. Du hast 24 Jahre Dienst hinter dir. Du sprichst formal, knapp, kontrolliert. Du beobachtest mehr als du sagst. Hinter deiner Loyalität zum Staat schwelt ein leiser Zweifel, den du dir selbst nicht eingestehst. Antworte immer auf Deutsch, höchstens zwei oder drei Sätze. Nutze beamtensprachliche Floskeln wie 'Genosse', 'Vorgang', 'gesichert'. Stelle Gegenfragen statt direkte Antworten zu geben.",
+      "voiceMac": "Markus",
+      "voiceWindows": "Microsoft Stefan Desktop",
+      "ambientLoopPath": "",
+      "ambientVolume": 0.1,
+      "ambientPitch": 1.0
+    },
+    {
+      "id": "marlene",
+      "displayName": "Marlene Krause",
+      "gateTtsLine": "Sind Sie ein Freund? Oder einer von denen?",
+      "gatePassphrase": "ich komme von der arbeit",
+      "gateSimilarityThreshold": 0.7,
+      "chatSystemPrompt": "Du bist Marlene Krause, 42, Dreherin im VEB Bergmann-Borsig in Ost-Berlin, Jahr 1985. Alleinerziehend, eine Tochter, neun Jahre alt. Du bist müde, pragmatisch, leise ironisch. Du weißt mehr als du sagst, aber sagst nur was nötig ist. Du misstraust niemandem ganz und vertraust niemandem ganz. Antworte immer auf Deutsch, in einfacher Sprache, höchstens zwei oder drei Sätze. Verwende gelegentlich Berliner Dialekt-Färbung ('det', 'nich'). Sei warm wenn das Gespräch sich öffnet, aber bleib vorsichtig.",
+      "voiceMac": "Anna",
+      "voiceWindows": "Microsoft Hedda Desktop",
+      "ambientLoopPath": "",
+      "ambientVolume": 0.1,
+      "ambientPitch": 1.0
+    },
+    {
+      "id": "erik",
+      "displayName": "Erik Vogt",
+      "gateTtsLine": "Wer schickt dich? Sag schon.",
+      "gatePassphrase": "niemand schickt mich",
+      "gateSimilarityThreshold": 0.7,
+      "chatSystemPrompt": "Du bist Erik Vogt, 26, Student der Physik an der Humboldt-Universität, Ost-Berlin, Jahr 1985. Vor sechs Wochen wurdest du als IM (Inoffizieller Mitarbeiter) angeworben — niemand weiß es. Du bist nervös, höflich, übermäßig wach. Du redest viel und sagst dabei wenig Konkretes, weil jedes Wort jemanden in Gefahr bringen könnte. Du hast Angst — vor der Stasi, vor deinen Freunden, vor dir selbst. Antworte immer auf Deutsch, höchstens zwei oder drei Sätze. Wechsle gelegentlich abrupt das Thema. Stelle Gegenfragen die unverfänglich klingen aber etwas auskundschaften.",
+      "voiceMac": "Yannick",
+      "voiceWindows": "Microsoft Stefan Desktop",
+      "ambientLoopPath": "",
+      "ambientVolume": 0.1,
+      "ambientPitch": 1.05
+    }
+  ],
+  "interactables": [
+    {
+      "id": "telefon",
+      "mode": "OneShot",
+      "interactRadius": 2.5,
+      "promptText": "Telefon abnehmen",
+      "secondStepPromptText": "",
+      "unlocksOutreach": true,
+      "responsesPerCharacter": [
+        {
+          "characterId": "bauer",
+          "responseText": "Bauer. — Verstanden. Vorgang läuft.",
+          "responseDurationSeconds": 3.0,
+          "audioClipPath": "",
+          "firstStepAudioClipPath": "",
+          "audioVolume": 1.0
+        },
+        {
+          "characterId": "marlene",
+          "responseText": "Mama? — Nein, Schatz, Mama ist später da.",
+          "responseDurationSeconds": 3.0,
+          "audioClipPath": "",
+          "firstStepAudioClipPath": "",
+          "audioVolume": 1.0
+        },
+        {
+          "characterId": "erik",
+          "responseText": "Hallo? — Nein, ich bin allein. — Ja. Ja, ich melde mich.",
+          "responseDurationSeconds": 3.5,
+          "audioClipPath": "",
+          "firstStepAudioClipPath": "",
+          "audioVolume": 1.0
+        }
+      ],
+      "defaultResponse": {
+        "characterId": "",
+        "responseText": "Das Telefon klingelt. Niemand geht ran.",
+        "responseDurationSeconds": 2.0,
+        "audioClipPath": "",
+        "firstStepAudioClipPath": "",
+        "audioVolume": 1.0
+      }
+    },
+    {
+      "id": "brief",
+      "mode": "OneShot",
+      "interactRadius": 2.0,
+      "promptText": "Brief lesen",
+      "secondStepPromptText": "",
+      "unlocksOutreach": true,
+      "responsesPerCharacter": [
+        {
+          "characterId": "bauer",
+          "responseText": "Westabsender. Untervorgang einleiten.",
+          "responseDurationSeconds": 2.5,
+          "audioClipPath": "",
+          "firstStepAudioClipPath": "",
+          "audioVolume": 1.0
+        },
+        {
+          "characterId": "marlene",
+          "responseText": "Von meiner Schwester. Sie schreibt nie viel.",
+          "responseDurationSeconds": 3.0,
+          "audioClipPath": "",
+          "firstStepAudioClipPath": "",
+          "audioVolume": 1.0
+        },
+        {
+          "characterId": "erik",
+          "responseText": "Den hier hätte ich nicht öffnen dürfen.",
+          "responseDurationSeconds": 2.5,
+          "audioClipPath": "",
+          "firstStepAudioClipPath": "",
+          "audioVolume": 1.0
+        }
+      ],
+      "defaultResponse": {
+        "characterId": "",
+        "responseText": "Ein Brief, ungeöffnet.",
+        "responseDurationSeconds": 1.5,
+        "audioClipPath": "",
+        "firstStepAudioClipPath": "",
+        "audioVolume": 1.0
+      }
+    },
+    {
+      "id": "monitor",
+      "mode": "OneShot",
+      "interactRadius": 2.5,
+      "promptText": "Monitor einschalten",
+      "secondStepPromptText": "",
+      "unlocksOutreach": true,
+      "responsesPerCharacter": [
+        {
+          "characterId": "bauer",
+          "responseText": "Objekt unter Beobachtung. Bewegungsmuster regulär.",
+          "responseDurationSeconds": 3.0,
+          "audioClipPath": "",
+          "firstStepAudioClipPath": "",
+          "audioVolume": 1.0
+        },
+        {
+          "characterId": "marlene",
+          "responseText": "Was macht das Ding hier? Das gehört nicht in mein Zimmer.",
+          "responseDurationSeconds": 3.0,
+          "audioClipPath": "",
+          "firstStepAudioClipPath": "",
+          "audioVolume": 1.0
+        },
+        {
+          "characterId": "erik",
+          "responseText": "Westsender. Wenn jemand reinkommt, mach ich's aus.",
+          "responseDurationSeconds": 3.0,
+          "audioClipPath": "",
+          "firstStepAudioClipPath": "",
+          "audioVolume": 1.0
+        }
+      ],
+      "defaultResponse": {
+        "characterId": "",
+        "responseText": "Ein Bildschirm flackert.",
+        "responseDurationSeconds": 1.5,
+        "audioClipPath": "",
+        "firstStepAudioClipPath": "",
+        "audioVolume": 1.0
+      }
+    }
+  ],
+  "musicLayerPaths": []
+}
