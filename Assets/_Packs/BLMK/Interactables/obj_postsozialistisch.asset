@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 334229f26435a4b34b988a7b2f3c1756, type: 3}
+  m_Name: obj_postsozialistisch
+  m_EditorClassIdentifier: Reach.Framework::Reach.Framework.Core.InteractableObjectDefinition
+  objectPrefab: {fileID: 0}
+  mode: 0
+  interactRadius: 2.5
+  promptText: Press Interact
+  secondStepPromptText: Press again
+  objectImage: {fileID: 21300000, guid: a97fbea4a9be34141bb6d1b8b83379a7, type: 3}
+  responsesPerCharacter:
+  - character: {fileID: 11400000, guid: 1ccc531ed5381400c885007ea487318d, type: 2}
+    responseText: "Wei\xDFt du, wo deine Krise endet, f\xE4ngt unsere oft erst an.
+      Du suchst nach dir selbst, das ist ein Luxus, den man sich leisten k\xF6nnen
+      muss."
+    responseDurationSeconds: 2.5
+    audioClip: {fileID: 8300000, guid: 5083ad7c60e87419d9f17a7ad929d983, type: 3}
+    firstStepAudioClip: {fileID: 0}
+    audioVolume: 1
+  - character: {fileID: 11400000, guid: b2d59cdd774a143458305807edd6c6c6, type: 2}
+    responseText: "Du wei\xDFt, wie es ist, wenn ein System kollabiert. Sozialismus
+      erlebt, Kapitalismus. Aber du hattest eine feste Erz\xE4hlung, an der du dich
+      abarbeiten konntest, ein Vorher und ein Nachher."
+    responseDurationSeconds: 2.5
+    audioClip: {fileID: 8300000, guid: ef730146fb8674cf0bdd5a60011908c7, type: 3}
+    firstStepAudioClip: {fileID: 0}
+    audioVolume: 1
+  - character: {fileID: 11400000, guid: 91db1e5e981a64acc93b09b93f537acc, type: 2}
+    responseText: "Du hast dein Leben lang gelernt, dass die Welt aus Fundamenten
+      besteht. Dass Mauern tragen h\xFCssen und dass ein Mann ein Mann ist und eine
+      Frau eine Frau."
+    responseDurationSeconds: 2.5
+    audioClip: {fileID: 8300000, guid: 456762c845b524477a06b6454a7fd38e, type: 3}
+    firstStepAudioClip: {fileID: 0}
+    audioVolume: 1
+  defaultResponse:
+    character: {fileID: 0}
+    responseText: 
+    responseDurationSeconds: 1.5
+    audioClip: {fileID: 0}
+    firstStepAudioClip: {fileID: 0}
+    audioVolume: 1
+  unlocksOutreach: 1

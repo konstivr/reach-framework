@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 334229f26435a4b34b988a7b2f3c1756, type: 3}
+  m_Name: obj_industriemoderne
+  m_EditorClassIdentifier: Reach.Framework::Reach.Framework.Core.InteractableObjectDefinition
+  objectPrefab: {fileID: 0}
+  mode: 0
+  interactRadius: 2.5
+  promptText: Press Interact
+  secondStepPromptText: Press again
+  objectImage: {fileID: 21300000, guid: 9f665d829a1224990b7f778f9026178e, type: 3}
+  responsesPerCharacter:
+  - character: {fileID: 11400000, guid: 1ccc531ed5381400c885007ea487318d, type: 2}
+    responseText: "Du sitzt da, guckst auf dein kleines Ger\xE4t und wei\xDFt vor
+      lauter Freiheit gar nicht, wo du hinlaufen sollst?"
+    responseDurationSeconds: 2.5
+    audioClip: {fileID: 8300000, guid: 8a0c57bcf071f4df4be24548e159b90e, type: 3}
+    firstStepAudioClip: {fileID: 0}
+    audioVolume: 1
+  - character: {fileID: 11400000, guid: b2d59cdd774a143458305807edd6c6c6, type: 2}
+    responseText: Schau mich an, meine Kleine. Du musst dich vor keinem Mann mehr
+      ducken.
+    responseDurationSeconds: 2.5
+    audioClip: {fileID: 8300000, guid: 39e68878277b74394b4cf08ebfb9ca08, type: 3}
+    firstStepAudioClip: {fileID: 0}
+    audioVolume: 1
+  - character: {fileID: 11400000, guid: 91db1e5e981a64acc93b09b93f537acc, type: 2}
+    responseText: Du guckst da hoch in den blauen Himmel, Junge, und du siehst nur
+      Wolken. Wir haben da oben den Tod gesehen.
+    responseDurationSeconds: 2.5
+    audioClip: {fileID: 8300000, guid: ddd2166741bc54874a0ce41b26cac962, type: 3}
+    firstStepAudioClip: {fileID: 0}
+    audioVolume: 1
+  defaultResponse:
+    character: {fileID: 0}
+    responseText: 
+    responseDurationSeconds: 1.5
+    audioClip: {fileID: 0}
+    firstStepAudioClip: {fileID: 0}
+    audioVolume: 1
+  unlocksOutreach: 1

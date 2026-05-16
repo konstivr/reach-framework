@@ -43,6 +43,10 @@ namespace Reach.Framework.Core
         [Tooltip("Only used in TwoStep mode after the first press.")]
         public string secondStepPromptText = "Press again";
 
+        [Header("Visual")]
+        [Tooltip("Sprite used to render this object in the world (e.g. as a billboard quad).")]
+        public Sprite objectImage;
+
         [Header("Per-Character Responses")]
         [Tooltip("Each entry defines what happens when a specific character interacts with this object. " +
                  "Characters not listed here use 'defaultResponse'.")]

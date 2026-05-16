@@ -1,352 +1,329 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using UnityEditor;
 using UnityEngine;
 using Reach.Framework.Core;
 
-namespace Reach.Framework.EditorTools
+namespace Reach.Framework.Editor
 {
     /// <summary>
-    /// Imports a Pack defined as JSON into Unity assets.
-    /// Creates/updates the StoryPack SO + all CharacterDefinition SOs + all InteractableObjectDefinition SOs.
+    /// Imports a pack from a ZIP file produced by the Lovable Pack Builder.
     ///
-    /// JSON schema is documented in Docs/pack-schema.md.
+    /// ZIP structure expected:
+    ///   pack.json
+    ///   images/characters/{id}.png
+    ///   images/interactables/{id}.png
+    ///   audio/{object_id}_{character_id}.mp3
     ///
-    /// Workflow:
-    ///   1) Tools -> Reach -> Import Pack from JSON
-    ///   2) Pick a .json file
-    ///   3) Pick the target Asset folder (e.g. Assets/_Packs/DDR/)
-    ///   4) Importer creates / updates assets
+    /// Behavior: In-place update. Existing pack folder is reused, SOs are
+    /// updated (not replaced) so scene references survive.
     /// </summary>
     public static class PackImporter
     {
-        // ============================================================
-        // DTOs that mirror the JSON schema
-        // ============================================================
-
-        [Serializable] class PackJson
+        [MenuItem("Tools/Reach/Import Pack from ZIP")]
+        public static void ImportZipMenuItem()
         {
-            public string packName;
-            public string description;
-            public string language;
-            public int maxPerspectives;
-            public List<CharacterJson> characters = new List<CharacterJson>();
-            public List<InteractableJson> interactables = new List<InteractableJson>();
-            public List<string> musicLayerPaths = new List<string>();
-        }
+            string zipPath = EditorUtility.OpenFilePanel("Choose pack ZIP", "", "zip");
+            if (string.IsNullOrEmpty(zipPath)) return;
 
-        [Serializable] class CharacterJson
-        {
-            public string id;
-            public string displayName;
-
-            public string gateTtsLine;
-            public string gatePassphrase;
-            public float gateSimilarityThreshold = 0.82f;
-
-            public string chatSystemPrompt;
-
-            public string voiceMac = "Samantha";
-            public string voiceWindows = "Zira";
-
-            public string ambientLoopPath; // relative to pack folder, e.g. "Audio/stasi_ambient.wav"
-            public float ambientVolume = 0.1f;
-            public float ambientPitch = 1.0f;
-        }
-
-        [Serializable] class InteractableJson
-        {
-            public string id;
-            public string mode = "OneShot"; // OneShot | TwoStep
-            public float interactRadius = 2.5f;
-
-            public string promptText = "Press Interact";
-            public string secondStepPromptText = "Press again";
-
-            public bool unlocksOutreach = true;
-
-            public List<ResponseJson> responsesPerCharacter = new List<ResponseJson>();
-            public ResponseJson defaultResponse;
-        }
-
-        [Serializable] class ResponseJson
-        {
-            public string characterId; // matches CharacterJson.id (empty = default fallback)
-            public string responseText;
-            public float responseDurationSeconds = 2.5f;
-            public string audioClipPath;          // relative to pack folder
-            public string firstStepAudioClipPath; // relative to pack folder
-            public float audioVolume = 1.0f;
-        }
-
-        // ============================================================
-        // Menu entry
-        // ============================================================
-
-        [MenuItem("Tools/Reach/Import Pack from JSON...")]
-        public static void ImportFromMenu()
-        {
-            string jsonPath = EditorUtility.OpenFilePanel("Select pack JSON", "", "json");
-            if (string.IsNullOrEmpty(jsonPath)) return;
-
-            string targetAbsFolder = EditorUtility.OpenFolderPanel(
-                "Select target asset folder (under Assets/_Packs/)",
-                Path.Combine(Application.dataPath, "_Packs"),
-                "");
-            if (string.IsNullOrEmpty(targetAbsFolder)) return;
-
-            // Convert to project-relative
-            if (!targetAbsFolder.StartsWith(Application.dataPath))
+            try
             {
-                EditorUtility.DisplayDialog("Invalid folder",
-                    "Target folder must be inside the Assets/ folder.", "OK");
-                return;
+                ImportZip(zipPath);
+                EditorUtility.DisplayDialog("Pack Import", "Pack imported successfully.", "OK");
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[PackImporter] Failed: {ex}");
+                EditorUtility.DisplayDialog("Pack Import — ERROR", ex.Message, "OK");
+            }
+        }
+
+        public static void ImportZip(string zipPath)
+        {
+            // Extract to temp folder
+            string tempDir = Path.Combine(Path.GetTempPath(), "ReachPackImport_" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(tempDir);
+
+            try
+            {
+                ZipFile.ExtractToDirectory(zipPath, tempDir);
+                Debug.Log($"[PackImporter] Extracted to: {tempDir}");
+
+                string jsonPath = Path.Combine(tempDir, "pack.json");
+                if (!File.Exists(jsonPath))
+                    throw new Exception("pack.json not found in ZIP root");
+
+                string jsonText = File.ReadAllText(jsonPath);
+                var packData = JsonUtility.FromJson<PackJson>(jsonText);
+                if (packData == null || string.IsNullOrEmpty(packData.packName))
+                    throw new Exception("Could not parse pack.json or packName missing");
+
+                ImportPackFromData(packData, tempDir);
+            }
+            finally
+            {
+                // Cleanup temp
+                try { Directory.Delete(tempDir, true); } catch { }
+            }
+        }
+
+        static void ImportPackFromData(PackJson data, string tempDir)
+        {
+            // Target folder under Assets/_Packs/{packName}/
+            string safeName = SafeName(data.packName);
+            string packRoot = $"Assets/_Packs/{safeName}";
+            EnsureFolder(packRoot);
+            EnsureFolder($"{packRoot}/Characters");
+            EnsureFolder($"{packRoot}/Interactables");
+            EnsureFolder($"{packRoot}/Sprites");
+            EnsureFolder($"{packRoot}/Sprites/Characters");
+            EnsureFolder($"{packRoot}/Sprites/Interactables");
+            EnsureFolder($"{packRoot}/Audio");
+
+            // ----- 1. Copy images + audio into Assets, set Sprite type on images -----
+            var charSprites = new Dictionary<string, Sprite>();
+            var objSprites = new Dictionary<string, Sprite>();
+            var audioClips = new Dictionary<string, AudioClip>(); // key: "objId_charId"
+
+            foreach (var c in data.characters ?? new List<CharacterJson>())
+            {
+                if (string.IsNullOrEmpty(c.transitionImage)) continue;
+                string srcPath = Path.Combine(tempDir, c.transitionImage.Replace("/", Path.DirectorySeparatorChar.ToString()));
+                if (!File.Exists(srcPath)) { Debug.LogWarning($"[PackImporter] Missing char image: {srcPath}"); continue; }
+                string ext = Path.GetExtension(srcPath);
+                string destAsset = $"{packRoot}/Sprites/Characters/{c.id}{ext}";
+                CopyAsset(srcPath, destAsset);
+                ApplySpriteImportSettings(destAsset);
+                var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(destAsset);
+                if (sprite != null) charSprites[c.id] = sprite;
             }
 
-            string targetAssetFolder = "Assets" + targetAbsFolder.Substring(Application.dataPath.Length);
-            Import(jsonPath, targetAssetFolder);
-        }
-
-        // ============================================================
-        // Importer core
-        // ============================================================
-
-        public static void Import(string jsonPath, string targetAssetFolder)
-        {
-            if (!File.Exists(jsonPath))
+            foreach (var o in data.interactables ?? new List<InteractableJson>())
             {
-                Debug.LogError($"[PackImporter] JSON file not found: {jsonPath}");
-                return;
+                if (!string.IsNullOrEmpty(o.objectImage))
+                {
+                    string srcPath = Path.Combine(tempDir, o.objectImage.Replace("/", Path.DirectorySeparatorChar.ToString()));
+                    if (File.Exists(srcPath))
+                    {
+                        string ext = Path.GetExtension(srcPath);
+                        string destAsset = $"{packRoot}/Sprites/Interactables/{o.id}{ext}";
+                        CopyAsset(srcPath, destAsset);
+                        ApplySpriteImportSettings(destAsset);
+                        var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(destAsset);
+                        if (sprite != null) objSprites[o.id] = sprite;
+                    }
+                }
+
+                // Per-character audio
+                foreach (var r in o.responsesPerCharacter ?? new List<ResponseJson>())
+                {
+                    if (string.IsNullOrEmpty(r.audioFile)) continue;
+                    string srcPath = Path.Combine(tempDir, r.audioFile.Replace("/", Path.DirectorySeparatorChar.ToString()));
+                    if (!File.Exists(srcPath)) { Debug.LogWarning($"[PackImporter] Missing audio: {srcPath}"); continue; }
+                    string ext = Path.GetExtension(srcPath);
+                    string destAsset = $"{packRoot}/Audio/{o.id}_{r.characterId}{ext}";
+                    CopyAsset(srcPath, destAsset);
+                    AssetDatabase.ImportAsset(destAsset);
+                    var clip = AssetDatabase.LoadAssetAtPath<AudioClip>(destAsset);
+                    if (clip != null) audioClips[$"{o.id}_{r.characterId}"] = clip;
+                }
             }
 
-            string jsonText;
-            try { jsonText = File.ReadAllText(jsonPath); }
-            catch (Exception ex) { Debug.LogError($"[PackImporter] Read failed: {ex.Message}"); return; }
-
-            PackJson data;
-            try { data = JsonUtility.FromJson<PackJson>(jsonText); }
-            catch (Exception ex) { Debug.LogError($"[PackImporter] JSON parse failed: {ex.Message}"); return; }
-
-            if (data == null)
+            // ----- 2. Create / update Character SOs -----
+            var charDefs = new Dictionary<string, CharacterDefinition>();
+            foreach (var c in data.characters ?? new List<CharacterJson>())
             {
-                Debug.LogError("[PackImporter] JSON parsed to null.");
-                return;
+                string assetPath = $"{packRoot}/Characters/{c.id}.asset";
+                var def = AssetDatabase.LoadAssetAtPath<CharacterDefinition>(assetPath);
+                if (def == null)
+                {
+                    def = ScriptableObject.CreateInstance<CharacterDefinition>();
+                    AssetDatabase.CreateAsset(def, assetPath);
+                }
+
+                def.displayName = c.displayName ?? c.id;
+                def.characterId = c.id;
+                def.gateTtsLine = c.gateTtsLine ?? def.gateTtsLine;
+                def.gatePassphrase = c.gatePassphrase ?? def.gatePassphrase;
+                if (c.gateSimilarityThreshold > 0f) def.gateSimilarityThreshold = c.gateSimilarityThreshold;
+                if (!string.IsNullOrEmpty(c.chatSystemPrompt)) def.chatSystemPrompt = c.chatSystemPrompt;
+                if (!string.IsNullOrEmpty(c.voiceMac)) def.voiceMacOS = c.voiceMac;
+                if (!string.IsNullOrEmpty(c.voiceWindows)) def.voiceWindows = c.voiceWindows;
+                if (c.ambientVolume > 0f) def.ambientVolume = c.ambientVolume;
+                if (c.ambientPitch > 0f) def.ambientPitch = c.ambientPitch;
+
+                if (charSprites.TryGetValue(c.id, out var sp)) def.transitionImage = sp;
+
+                EditorUtility.SetDirty(def);
+                charDefs[c.id] = def;
             }
 
-            // The folder containing the JSON file. Audio paths are relative to this folder.
-            string jsonFolder = Path.GetDirectoryName(jsonPath);
-
-            // Make sure target folder + subfolders exist
-            EnsureFolder(targetAssetFolder);
-            EnsureFolder(targetAssetFolder + "/Characters");
-            EnsureFolder(targetAssetFolder + "/Interactables");
-
-            // ----- Characters -----
-            var charLookup = new Dictionary<string, CharacterDefinition>();
-
-            foreach (var cj in data.characters)
+            // ----- 3. Create / update Interactable SOs -----
+            var iodefs = new List<InteractableObjectDefinition>();
+            foreach (var o in data.interactables ?? new List<InteractableJson>())
             {
-                if (string.IsNullOrEmpty(cj.id))
+                string assetPath = $"{packRoot}/Interactables/{o.id}.asset";
+                var iod = AssetDatabase.LoadAssetAtPath<InteractableObjectDefinition>(assetPath);
+                if (iod == null)
                 {
-                    Debug.LogWarning("[PackImporter] Character without id, skipped.");
-                    continue;
+                    iod = ScriptableObject.CreateInstance<InteractableObjectDefinition>();
+                    AssetDatabase.CreateAsset(iod, assetPath);
                 }
 
-                string assetPath = $"{targetAssetFolder}/Characters/{cj.id}.asset";
-                var asset = AssetDatabase.LoadAssetAtPath<CharacterDefinition>(assetPath);
+                if (!string.IsNullOrEmpty(o.mode) && Enum.TryParse<InteractActionMode>(o.mode, out var mode))
+                    iod.mode = mode;
+                if (o.interactRadius > 0f) iod.interactRadius = o.interactRadius;
+                if (!string.IsNullOrEmpty(o.promptText)) iod.promptText = o.promptText;
+                if (!string.IsNullOrEmpty(o.secondStepPromptText)) iod.secondStepPromptText = o.secondStepPromptText;
+                iod.unlocksOutreach = o.unlocksOutreach;
 
-                if (asset == null)
-                {
-                    asset = ScriptableObject.CreateInstance<CharacterDefinition>();
-                    AssetDatabase.CreateAsset(asset, assetPath);
-                }
-
-                asset.characterId = cj.id;
-                asset.displayName = cj.displayName ?? cj.id;
-                asset.gateTtsLine = cj.gateTtsLine ?? "";
-                asset.gatePassphrase = cj.gatePassphrase ?? "";
-                asset.gateSimilarityThreshold = cj.gateSimilarityThreshold;
-                asset.chatSystemPrompt = cj.chatSystemPrompt ?? "";
-                asset.voiceMacOS = cj.voiceMac ?? "Samantha";
-                asset.voiceWindows = cj.voiceWindows ?? "Zira";
-                asset.ambientLoop = ResolveAudio(cj.ambientLoopPath, jsonFolder, targetAssetFolder);
-                asset.ambientVolume = cj.ambientVolume;
-                asset.ambientPitch = cj.ambientPitch;
-
-                EditorUtility.SetDirty(asset);
-                charLookup[cj.id] = asset;
-            }
-
-            // ----- Interactables -----
-            var interactableAssets = new List<InteractableObjectDefinition>();
-
-            foreach (var ij in data.interactables)
-            {
-                if (string.IsNullOrEmpty(ij.id))
-                {
-                    Debug.LogWarning("[PackImporter] Interactable without id, skipped.");
-                    continue;
-                }
-
-                string assetPath = $"{targetAssetFolder}/Interactables/{ij.id}.asset";
-                var asset = AssetDatabase.LoadAssetAtPath<InteractableObjectDefinition>(assetPath);
-
-                if (asset == null)
-                {
-                    asset = ScriptableObject.CreateInstance<InteractableObjectDefinition>();
-                    AssetDatabase.CreateAsset(asset, assetPath);
-                }
-
-                asset.mode = ij.mode == "TwoStep" ? InteractActionMode.TwoStep : InteractActionMode.OneShot;
-                asset.interactRadius = ij.interactRadius;
-                asset.promptText = ij.promptText ?? "Press Interact";
-                asset.secondStepPromptText = ij.secondStepPromptText ?? "Press again";
-                asset.unlocksOutreach = ij.unlocksOutreach;
+                if (objSprites.TryGetValue(o.id, out var sp)) iod.objectImage = sp;
 
                 // Per-character responses
-                asset.responsesPerCharacter = new List<CharacterResponse>();
-                foreach (var rj in ij.responsesPerCharacter)
+                iod.responsesPerCharacter = new List<CharacterResponse>();
+                foreach (var r in o.responsesPerCharacter ?? new List<ResponseJson>())
                 {
-                    if (rj == null) continue;
-                    asset.responsesPerCharacter.Add(BuildResponse(rj, charLookup, jsonFolder, targetAssetFolder));
+                    var resp = new CharacterResponse();
+                    if (charDefs.TryGetValue(r.characterId, out var charDef)) resp.character = charDef;
+                    resp.responseText = r.responseText ?? "";
+                    if (r.responseDurationSeconds > 0f) resp.responseDurationSeconds = r.responseDurationSeconds;
+                    if (r.audioVolume > 0f) resp.audioVolume = r.audioVolume;
+                    if (audioClips.TryGetValue($"{o.id}_{r.characterId}", out var clip)) resp.audioClip = clip;
+                    iod.responsesPerCharacter.Add(resp);
                 }
 
-                // Default response (fallback)
-                asset.defaultResponse = ij.defaultResponse != null
-                    ? BuildResponse(ij.defaultResponse, charLookup, jsonFolder, targetAssetFolder)
-                    : new CharacterResponse();
+                // Default response
+                if (o.defaultResponse != null)
+                {
+                    iod.defaultResponse.responseText = o.defaultResponse.responseText ?? "";
+                    if (o.defaultResponse.responseDurationSeconds > 0f)
+                        iod.defaultResponse.responseDurationSeconds = o.defaultResponse.responseDurationSeconds;
+                }
 
-                EditorUtility.SetDirty(asset);
-                interactableAssets.Add(asset);
+                EditorUtility.SetDirty(iod);
+                iodefs.Add(iod);
             }
 
-            // ----- Pack manifest -----
-            string packAssetPath = $"{targetAssetFolder}/{SafeFileName(data.packName)}.asset";
+            // ----- 4. Create / update Pack SO -----
+            string packAssetPath = $"{packRoot}/{data.packName}.asset";
             var pack = AssetDatabase.LoadAssetAtPath<StoryPack>(packAssetPath);
-
             if (pack == null)
             {
                 pack = ScriptableObject.CreateInstance<StoryPack>();
                 AssetDatabase.CreateAsset(pack, packAssetPath);
             }
-
-            pack.packName = data.packName ?? "Untitled Pack";
+            pack.packName = data.packName;
             pack.description = data.description ?? "";
-            pack.language = data.language ?? "en";
+            pack.language = string.IsNullOrEmpty(data.language) ? "en" : data.language;
             pack.maxPerspectives = data.maxPerspectives;
-            pack.characters = new List<CharacterDefinition>();
-            foreach (var cj in data.characters)
-                if (charLookup.TryGetValue(cj.id, out var charAsset))
-                    pack.characters.Add(charAsset);
-
-            pack.musicLayers = new List<AudioClip>();
-            foreach (var path in data.musicLayerPaths)
-            {
-                var clip = ResolveAudio(path, jsonFolder, targetAssetFolder);
-                if (clip != null) pack.musicLayers.Add(clip);
-            }
-
+            pack.characters = new List<CharacterDefinition>(charDefs.Values);
             EditorUtility.SetDirty(pack);
 
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
 
-            Debug.Log($"[PackImporter] Imported '{pack.packName}': " +
-                      $"{pack.characters.Count} characters, {interactableAssets.Count} interactables. " +
-                      $"-> {packAssetPath}");
-
-            // Select the new pack in the project window
-            Selection.activeObject = pack;
-            EditorGUIUtility.PingObject(pack);
+            Debug.Log($"[PackImporter] Pack '{data.packName}' imported: " +
+                      $"{charDefs.Count} characters, {iodefs.Count} interactables, " +
+                      $"{audioClips.Count} audio clips.");
         }
 
         // ============================================================
         // Helpers
         // ============================================================
 
-        static CharacterResponse BuildResponse(
-            ResponseJson rj,
-            Dictionary<string, CharacterDefinition> charLookup,
-            string jsonFolder,
-            string targetAssetFolder)
+        static void CopyAsset(string srcAbs, string destAssetPath)
         {
-            var r = new CharacterResponse
-            {
-                responseText = rj.responseText ?? "",
-                responseDurationSeconds = rj.responseDurationSeconds,
-                audioVolume = rj.audioVolume,
-            };
-
-            if (!string.IsNullOrEmpty(rj.characterId) && charLookup.TryGetValue(rj.characterId, out var character))
-                r.character = character;
-
-            r.audioClip = ResolveAudio(rj.audioClipPath, jsonFolder, targetAssetFolder);
-            r.firstStepAudioClip = ResolveAudio(rj.firstStepAudioClipPath, jsonFolder, targetAssetFolder);
-
-            return r;
-        }
-
-        /// <summary>
-        /// Resolve an audio file path. The path in JSON is relative to the JSON's folder.
-        /// We copy the audio into the target Asset folder (under /Audio/) if it isn't already there.
-        /// </summary>
-        static AudioClip ResolveAudio(string relativePath, string jsonFolder, string targetAssetFolder)
-        {
-            if (string.IsNullOrEmpty(relativePath)) return null;
-
-            string absSource = Path.GetFullPath(Path.Combine(jsonFolder, relativePath));
-            if (!File.Exists(absSource))
-            {
-                Debug.LogWarning($"[PackImporter] Audio not found: {absSource}");
-                return null;
-            }
-
-            // Destination path inside Assets/
-            string audioFolder = targetAssetFolder + "/Audio";
-            EnsureFolder(audioFolder);
-
-            string fileName = Path.GetFileName(absSource);
-            string destAssetPath = $"{audioFolder}/{fileName}";
             string destAbs = Path.Combine(Application.dataPath, "..", destAssetPath);
-
-            // Copy if missing or stale
-            try
-            {
-                if (!File.Exists(destAbs) || File.GetLastWriteTime(absSource) > File.GetLastWriteTime(destAbs))
-                {
-                    File.Copy(absSource, destAbs, true);
-                    AssetDatabase.ImportAsset(destAssetPath);
-                }
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning($"[PackImporter] Copy failed for {absSource}: {ex.Message}");
-                return null;
-            }
-
-            return AssetDatabase.LoadAssetAtPath<AudioClip>(destAssetPath);
+            string destDir = Path.GetDirectoryName(destAbs);
+            if (!Directory.Exists(destDir)) Directory.CreateDirectory(destDir);
+            File.Copy(srcAbs, destAbs, true);
+            AssetDatabase.ImportAsset(destAssetPath);
         }
 
-        static void EnsureFolder(string assetFolder)
+        static void ApplySpriteImportSettings(string assetPath)
         {
-            if (AssetDatabase.IsValidFolder(assetFolder)) return;
+            var importer = AssetImporter.GetAtPath(assetPath) as TextureImporter;
+            if (importer == null) return;
+            importer.textureType = TextureImporterType.Sprite;
+            importer.spriteImportMode = SpriteImportMode.Single;
+            importer.SaveAndReimport();
+        }
 
-            string parent = Path.GetDirectoryName(assetFolder).Replace("\\", "/");
-            string name = Path.GetFileName(assetFolder);
-
-            if (!AssetDatabase.IsValidFolder(parent))
-                EnsureFolder(parent);
-
+        static void EnsureFolder(string path)
+        {
+            if (AssetDatabase.IsValidFolder(path)) return;
+            string parent = Path.GetDirectoryName(path).Replace("\\", "/");
+            string name = Path.GetFileName(path);
+            if (!AssetDatabase.IsValidFolder(parent)) EnsureFolder(parent);
             AssetDatabase.CreateFolder(parent, name);
         }
 
-        static string SafeFileName(string s)
+        static string SafeName(string s)
         {
             if (string.IsNullOrEmpty(s)) return "Pack";
-            foreach (char c in Path.GetInvalidFileNameChars())
-                s = s.Replace(c, '_');
-            return s;
+            foreach (char c in Path.GetInvalidFileNameChars()) s = s.Replace(c, '_');
+            return s.Trim();
+        }
+
+        // ============================================================
+        // JSON DTOs (matching Lovable export)
+        // ============================================================
+
+        [Serializable]
+        class PackJson
+        {
+            public string packName;
+            public string description;
+            public string language;
+            public int maxPerspectives;
+            public List<CharacterJson> characters;
+            public List<InteractableJson> interactables;
+            public List<string> musicLayerPaths;
+        }
+
+        [Serializable]
+        class CharacterJson
+        {
+            public string id;
+            public string displayName;
+            public string transitionImage;
+            public string gateTtsLine;
+            public string gatePassphrase;
+            public float gateSimilarityThreshold;
+            public string chatSystemPrompt;
+            public string voiceMac;
+            public string voiceWindows;
+            public string ambientLoopPath;
+            public float ambientVolume;
+            public float ambientPitch;
+        }
+
+        [Serializable]
+        class InteractableJson
+        {
+            public string id;
+            public string mode;
+            public string objectImage;
+            public float interactRadius;
+            public string promptText;
+            public string secondStepPromptText;
+            public bool unlocksOutreach;
+            public List<ResponseJson> responsesPerCharacter;
+            public ResponseJson defaultResponse;
+        }
+
+        [Serializable]
+        class ResponseJson
+        {
+            public string characterId;
+            public string responseText;
+            public float responseDurationSeconds;
+            public string audioClipPath;
+            public string firstStepAudioClipPath;
+            public float audioVolume;
+            public string audioFile;
         }
     }
 }
