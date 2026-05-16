@@ -1467,7 +1467,7 @@ CharacterController:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Height: 2
+  m_Height: 1.9
   m_Radius: 0.3
   m_SlopeLimit: 45
   m_StepOffset: 0.3
@@ -2322,14 +2322,20 @@ MonoBehaviour:
   moveFilter:
     deadzone: 0.22
     autoCalibrate: 0
-    calibrateWhenBelow: 0.08
+    continuousCalibrate: 0
+    calibrateWhenBelow: 0.06
+    restStableSeconds: 0.4
     calibrateSpeed: 6
+    initialCalibrateSeconds: 0.3
     forwardSnapAngleDeg: 8
   lookFilter:
     deadzone: 0.06
     autoCalibrate: 1
+    continuousCalibrate: 0
     calibrateWhenBelow: 0.04
+    restStableSeconds: 0.4
     calibrateSpeed: 6
+    initialCalibrateSeconds: 0.3
     forwardSnapAngleDeg: 0
 --- !u!114 &2088553898
 MonoBehaviour:
@@ -2422,11 +2428,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Reach.Framework::Reach.Framework.Dialogue.SpeechInput
   microphoneDevice: 
   frequency: 16000
-  autoSendSeconds: 6
-  minRecordSeconds: 0.25
+  minHoldSeconds: 3
+  maxRecordSeconds: 15
   recordingPrompt: Speak and wait...
   sendingPrompt: Sending...
   canceledPrompt: Canceled.
+  tooShortPrompt: "Zu kurz \u2014 l\xE4nger halten."
   debugLogs: 1
 --- !u!114 &2088553904
 MonoBehaviour:

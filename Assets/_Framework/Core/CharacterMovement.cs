@@ -112,17 +112,10 @@ namespace Reach.Framework.Core
             float speedOffset = 0.1f;
             float inputMag = m.magnitude;
 
-            if (currentHoriz < targetSpeed - speedOffset || currentHoriz > targetSpeed + speedOffset)
-            {
-                _currentSpeed = Mathf.Lerp(currentHoriz, targetSpeed * inputMag, Time.deltaTime * speedChangeRate);
-                _currentSpeed = Mathf.Round(_currentSpeed * 1000f) / 1000f;
-            }
-            else
-            {
-                _currentSpeed = targetSpeed;
-            }
+            // Instant speed response — no ramp-up
+            _currentSpeed = targetSpeed * inputMag;
 
-            // Smoothed animation blend
+            // Animation blend still smoothed for visual cleanliness
             _animSpeedBlend = Mathf.Lerp(_animSpeedBlend, targetSpeed, Time.deltaTime * speedChangeRate);
             if (_animSpeedBlend < 0.01f) _animSpeedBlend = 0f;
 
