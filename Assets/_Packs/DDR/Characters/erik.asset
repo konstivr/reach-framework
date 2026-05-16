@@ -28,6 +28,7 @@ MonoBehaviour:
     klingen aber etwas auskundschaften."
   voiceMacOS: Yannick
   voiceWindows: Microsoft Stefan Desktop
+  transitionImage: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
   ambientLoop: {fileID: 8300000, guid: 827fe6a99ca944a619484fe050c1c53a, type: 3}
   ambientVolume: 0.1
   ambientPitch: 1.05

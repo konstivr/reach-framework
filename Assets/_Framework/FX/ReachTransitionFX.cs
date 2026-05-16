@@ -79,6 +79,18 @@ namespace Reach.Framework.FX
         // Public API
         // ============================================================
 
+        /// <summary>
+        /// Plays only the close phase. Used by Endscreen to fade out without switching.
+        /// </summary>
+        public async System.Threading.Tasks.Task PlayCloseOnlyAsync()
+        {
+            if (_isTransitioning) return;
+            _isTransitioning = true;
+            await AnimateBars(1f, 0f, closeSeconds);
+            // Bars stay closed — caller is responsible for further visuals
+            _isTransitioning = false;
+        }
+
         public async Task<bool> PlayAndSwitchAsync(PossessableCharacter target)
         {
             if (_isTransitioning) return false;

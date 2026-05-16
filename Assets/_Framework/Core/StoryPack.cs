@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Video;
 
 namespace Reach.Framework.Core
 {
@@ -42,5 +43,10 @@ namespace Reach.Framework.Core
 
         public CharacterDefinition StartCharacter =>
             characters != null && characters.Count > 0 ? characters[0] : null;
+
+        [Header("Endscreen")]
+        [Tooltip("Outro video played when all characters have interacted with all objects.")]
+        public VideoClip outroVideo;
+
     }
 }

@@ -23,6 +23,7 @@ namespace Reach.Framework.Core
         public CharacterRegistry Characters { get; } = new CharacterRegistry();
         public InputReader Input => input;
         public IPerspectiveManager Perspective { get; set; }
+        public EndscreenSystem Endscreen { get; set; }
         public SpeechSystem Speech { get; set; }
         public IHud Hud { get; set; }
         public IGateSystem Gate { get; set; }

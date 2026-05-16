@@ -27,6 +27,7 @@ MonoBehaviour:
     Sei warm wenn das Gespr\xE4ch sich \xF6ffnet, aber bleib vorsichtig."
   voiceMacOS: Anna
   voiceWindows: Microsoft Hedda Desktop
+  transitionImage: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
   ambientLoop: {fileID: 8300000, guid: fa1a4579841514556b1cff24c059092e, type: 3}
   ambientVolume: 0.1
   ambientPitch: 1

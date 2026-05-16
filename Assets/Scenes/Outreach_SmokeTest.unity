@@ -1769,12 +1769,13 @@ MonoBehaviour:
   sfxVolume: 0.9
   topBar: {fileID: 1695595347}
   bottomBar: {fileID: 1990236596}
-  barClosedRatio: 0.5
   imageGroup: {fileID: 1019834407}
   characterImage: {fileID: 1943136884}
   closeSeconds: 0.6
-  holdSeconds: 1.2
-  openSeconds: 0.6
+  openToImageSeconds: 0.4
+  holdImageSeconds: 1.5
+  closeAgainSeconds: 0.5
+  openFinalSeconds: 0.6
   settleAfterSeconds: 0.1
   debugLogs: 1
 --- !u!114 &1633574844
@@ -1976,7 +1977,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 540}
   m_SizeDelta: {x: 0, y: 600}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1695595348
@@ -2631,7 +2632,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: -300}
+  m_AnchoredPosition: {x: 0, y: -540}
   m_SizeDelta: {x: 0, y: 600}
   m_Pivot: {x: 0.5, y: 0}
 --- !u!114 &1990236597
