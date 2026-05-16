@@ -4910,6 +4910,7 @@ GameObject:
   - component: {fileID: 2088553912}
   - component: {fileID: 2088553911}
   - component: {fileID: 2088553910}
+  - component: {fileID: 2088553913}
   m_Layer: 0
   m_Name: Systems
   m_TagString: Untagged
@@ -5157,6 +5158,22 @@ MonoBehaviour:
   modelPath: /Users/kvrinsum/whisper-models/ggml-small.bin
   threads: 6
   debugLogs: 1
+--- !u!114 &2088553913
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2088553896}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 47e4580a944274cecb6f936b191d3fae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Reach.Framework::Reach.Framework.Audio.AudioLayerSystem
+  mixerGroup: {fileID: 0}
+  masterVolume: 0.25
+  fadeInSeconds: 1.5
+  debugLogs: 1
 --- !u!1 &2107332638
 GameObject:
   m_ObjectHideFlags: 0
@@ -5293,10 +5310,10 @@ SceneRoots:
   - {fileID: 2088553899}
   - {fileID: 484097408}
   - {fileID: 1910717772}
+  - {fileID: 818213112}
+  - {fileID: 784773742}
   - {fileID: 1633574847}
   - {fileID: 1591475366}
   - {fileID: 867898030}
   - {fileID: 1834962109}
   - {fileID: 617471429}
-  - {fileID: 818213112}
-  - {fileID: 784773742}
