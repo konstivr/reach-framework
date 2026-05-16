@@ -46,6 +46,10 @@ namespace Reach.Framework.Core
         public string voiceMacOS = "Samantha";
         public string voiceWindows = "Zira";
 
+        [Header("Transition")]
+        [Tooltip("Image shown during the transition when switching INTO this character.")]
+        public Sprite transitionImage;
+
         [Header("Ambient (per character)")]
         [Tooltip("Looping ambient audio while this character is controlled.")]
         public AudioClip ambientLoop;

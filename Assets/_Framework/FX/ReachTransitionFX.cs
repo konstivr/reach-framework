@@ -9,23 +9,19 @@ using Reach.Framework.HUD;
 namespace Reach.Framework.FX
 {
     /// <summary>
-    /// Transition effect for perspective switches.
+    /// Eye-close transition for perspective switches.
     ///
-    /// Phases:
-    ///   1) Build-up: PostFX volume ramps in, optional center-text + icon pulse appear
-    ///   2) Black fade-in
-    ///   3) Hold full black + (call switch internally)
-    ///   4) Smooth blink-open: black fades out → blink → settle
-    ///
-    /// All visual elements are optional. Leave fields null to skip them.
-    /// For DDR-style transitions: replace the heart icon, change text, swap volume profile.
+    /// Choreography:
+    ///   1) Close: bars slide to center (eyes close)
+    ///   2) Open to image: bars slide back, revealing fullscreen char image
+    ///   3) Hold image (with switch happening)
+    ///   4) Close again: bars slide to center
+    ///   5) Open final: bars slide back, revealing new perspective
     /// </summary>
     public class ReachTransitionFX : MonoBehaviour, IReachTransition
     {
         [Header("PostFX")]
-        [Tooltip("Optional: a Volume that gets weighted in during the build-up.")]
         public Volume transitionVolume;
-
         [Range(0f, 1f)] public float transitionVolumeMax = 1f;
 
         [Header("Audio")]
@@ -33,37 +29,23 @@ namespace Reach.Framework.FX
         public AudioClip transitionSfx;
         [Range(0f, 1f)] public float sfxVolume = 0.9f;
 
-        [Header("UI Overlay (optional)")]
-        public CanvasGroup blackFadeGroup;
-        public CanvasGroup centerGroup;
+        [Header("Bars (eye close/open)")]
+        [Tooltip("Top bar that slides down. Anchor: top-stretch, Pivot Y=1.")]
+        public RectTransform topBar;
+        [Tooltip("Bottom bar that slides up. Anchor: bottom-stretch, Pivot Y=0.")]
+        public RectTransform bottomBar;
 
-        [Tooltip("Optional icon (e.g. heart). Pulse-animated during build-up if set.")]
-        public RectTransform iconTransform;
-        public Image iconImage;
-
-        public TMP_Text centerText;
-
-        [Header("Center Text")]
-        [Tooltip("Text shown during the build-up. Empty = no text.")]
-        public string centerMessage = "";
-
-        public float centerTextScale = 1.25f;
-
-        [Header("Icon Pulse (lub-dub heartbeat)")]
-        public bool enableIconPulse = true;
-        public float iconBaseScale = 1.0f;
-        [Range(0f, 1f)] public float iconPulseStrength = 0.42f;
-        public float bpm = 78f;
-        [Range(0.05f, 0.2f)] public float peakWidth = 0.08f;
-        public float dubDelay = 0.17f;
-        [Range(0f, 1f)] public float dubStrength = 0.65f;
+        [Header("Character Image (shown fullscreen between phases)")]
+        public CanvasGroup imageGroup;
+        public Image characterImage;
 
         [Header("Timing")]
-        public float buildUpSeconds = 1.5f;
-        public float blackFadeInSeconds = 0.9f;
-        public float holdFullBlackSeconds = 0.35f;
-        public float blackFadeOutSeconds = 0.65f;
-        public float settleAfterSeconds = 0.25f;
+        public float closeSeconds = 0.5f;
+        public float openToImageSeconds = 0.4f;
+        public float holdImageSeconds = 1.5f;
+        public float closeAgainSeconds = 0.5f;
+        public float openFinalSeconds = 0.6f;
+        public float settleAfterSeconds = 0.1f;
 
         [Header("Debug")]
         public bool debugLogs = true;
@@ -81,13 +63,16 @@ namespace Reach.Framework.FX
 
         void Awake()
         {
-            // Reset any visuals to their resting state
+            // Force bars fully off-screen at rest, image hidden
             if (transitionVolume != null) transitionVolume.weight = 0f;
-            if (blackFadeGroup != null) blackFadeGroup.alpha = 0f;
-            if (centerGroup != null) centerGroup.alpha = 0f;
-            if (iconImage != null) iconImage.enabled = false;
-            if (iconTransform != null) iconTransform.localScale = Vector3.one * iconBaseScale;
-            if (centerText != null) centerText.text = "";
+            if (imageGroup != null) imageGroup.alpha = 0f;
+            SetBarOpenness(1f);
+        }
+
+        void OnEnable()
+        {
+            // Belt-and-suspenders: ensure bars hidden even after scene reloads
+            SetBarOpenness(1f);
         }
 
         // ============================================================
@@ -102,135 +87,132 @@ namespace Reach.Framework.FX
             if (ctx == null || ctx.Perspective == null) return false;
 
             _isTransitioning = true;
-            if (debugLogs) Debug.Log($"[ReachFX] Start transition to '{target?.name}'");
+            if (debugLogs) Debug.Log($"[ReachFX] Transition INTO \'{target?.name}\'");
 
-            // Lock HUD with the centerMessage as FX text (so HudText doesn't fight us)
-            ctx.Hud?.SetFXOverride(centerMessage ?? "");
+            ctx.Hud?.SetFXOverride("");
 
-            // SFX
             if (sfxSource != null && transitionSfx != null)
                 sfxSource.PlayOneShot(transitionSfx, sfxVolume);
 
-            // Show center group + icon
-            if (centerGroup != null) centerGroup.alpha = 1f;
-            if (iconImage != null) iconImage.enabled = true;
-            if (centerText != null)
+            // Set image (hidden via CanvasGroup alpha until phase 2)
+            bool hasImage = false;
+            if (characterImage != null)
             {
-                centerText.text = centerMessage ?? "";
-                centerText.transform.localScale = Vector3.one * centerTextScale;
+                if (target != null && target.Definition != null && target.Definition.transitionImage != null)
+                {
+                    characterImage.sprite = target.Definition.transitionImage;
+                    characterImage.enabled = true;
+                    hasImage = true;
+                }
+                else
+                {
+                    characterImage.enabled = false;
+                }
             }
 
-            // Phase 1+2: build-up + black fade-in
-            await RunBuildUp();
-            await RunBlackFadeIn();
+            // ---- Phase 1: Close (eyes shut) ----
+            await AnimateBars(1f, 0f, closeSeconds);
 
-            // Phase 3: hold black, switch internally
-            await Wait(holdFullBlackSeconds);
+            // Switch happens NOW (under cover of closed bars)
             bool switched = ctx.Perspective.TrySwitchTo(target);
 
-            // Phase 4: hide center group, fade out black
-            if (centerGroup != null) centerGroup.alpha = 0f;
-            if (iconImage != null) iconImage.enabled = false;
+            // ---- Phase 2: Open to reveal fullscreen image ----
+            if (hasImage && imageGroup != null)
+            {
+                imageGroup.alpha = 1f; // image visible while bars open
+                await AnimateBars(0f, 1f, openToImageSeconds);
 
-            await RunBlackFadeOut();
+                // ---- Phase 3: Hold fullscreen image ----
+                await Wait(holdImageSeconds);
+
+                // ---- Phase 4: Close again ----
+                await AnimateBars(1f, 0f, closeAgainSeconds);
+
+                imageGroup.alpha = 0f; // hide image while bars are closed
+            }
+            else
+            {
+                // No image — just hold briefly while closed
+                await Wait(holdImageSeconds * 0.3f);
+            }
+
+            // ---- Phase 5: Open final (reveal new perspective) ----
+            await AnimateBars(0f, 1f, openFinalSeconds);
+
             await Wait(settleAfterSeconds);
 
-            // Reset PostFX
+            // Reset
             if (transitionVolume != null) transitionVolume.weight = 0f;
-
-            // Release HUD
             ctx.Hud?.ClearFXOverride();
 
             _isTransitioning = false;
-            if (debugLogs) Debug.Log($"[ReachFX] End transition (switch={switched})");
+            if (debugLogs) Debug.Log($"[ReachFX] Done (switch={switched})");
             return switched;
         }
 
         // ============================================================
-        // Phases
+        // Bar animation
         // ============================================================
 
-        async Task RunBuildUp()
+        /// <summary>
+        /// openness: 1 = bars pushed fully off-screen (open eyes),
+        ///           0 = bars meet at center (closed eyes).
+        /// </summary>
+        async Task AnimateBars(float fromOpenness, float toOpenness, float duration)
         {
             float t = 0f;
-            while (t < buildUpSeconds)
+            while (t < duration)
             {
                 t += Time.deltaTime;
-                float k = Mathf.Clamp01(t / buildUpSeconds);
+                float k = Mathf.Clamp01(t / duration);
                 float eased = EaseInOutCubic(k);
-
-                if (transitionVolume != null)
-                    transitionVolume.weight = Mathf.Lerp(0f, transitionVolumeMax, eased);
-
-                PulseIcon();
+                float openness = Mathf.Lerp(fromOpenness, toOpenness, eased);
+                SetBarOpenness(openness);
                 await Task.Yield();
             }
+            SetBarOpenness(toOpenness);
         }
 
-        async Task RunBlackFadeIn()
+        /// <summary>
+        /// openness 1 = bars off-screen (above top / below bottom of screen),
+        /// openness 0 = bars cover their half of screen (meet at center).
+        /// Each bar fills exactly HALF the screen when openness = 0.
+        /// </summary>
+        void SetBarOpenness(float openness)
         {
-            if (blackFadeGroup == null) { await Wait(blackFadeInSeconds); return; }
+            float screenH = Screen.height;
+            float halfH = screenH * 0.5f;
 
-            float t = 0f;
-            while (t < blackFadeInSeconds)
+            // Set bar height to cover half the screen
+            if (topBar != null)
             {
-                t += Time.deltaTime;
-                float k = Mathf.Clamp01(t / blackFadeInSeconds);
-                blackFadeGroup.alpha = Mathf.Lerp(0f, 1f, EaseInCubic(k));
-                PulseIcon();
-                await Task.Yield();
+                Vector2 size = topBar.sizeDelta;
+                size.y = halfH;
+                topBar.sizeDelta = size;
+
+                // Pivot Y = 1 (top), so anchoredPosition.y of 0 = bar's top edge at top of canvas
+                // openness 0 → anchoredPosition.y = 0 (bar fully visible, hangs down from top)
+                // openness 1 → anchoredPosition.y = +halfH (bar fully above screen)
+                Vector2 pos = topBar.anchoredPosition;
+                pos.y = openness * halfH;
+                topBar.anchoredPosition = pos;
             }
-            blackFadeGroup.alpha = 1f;
-        }
 
-        async Task RunBlackFadeOut()
-        {
-            if (blackFadeGroup == null) { await Wait(blackFadeOutSeconds); return; }
-
-            float t = 0f;
-            while (t < blackFadeOutSeconds)
+            if (bottomBar != null)
             {
-                t += Time.deltaTime;
-                float k = Mathf.Clamp01(t / blackFadeOutSeconds);
-                blackFadeGroup.alpha = Mathf.Lerp(1f, 0f, EaseOutCubic(k));
-                await Task.Yield();
+                Vector2 size = bottomBar.sizeDelta;
+                size.y = halfH;
+                bottomBar.sizeDelta = size;
+
+                // Pivot Y = 0 (bottom), so anchoredPosition.y of 0 = bar's bottom edge at bottom of canvas
+                // openness 0 → anchoredPosition.y = 0 (bar fully visible, rises up from bottom)
+                // openness 1 → anchoredPosition.y = -halfH (bar fully below screen)
+                Vector2 pos = bottomBar.anchoredPosition;
+                pos.y = -openness * halfH;
+                bottomBar.anchoredPosition = pos;
             }
-            blackFadeGroup.alpha = 0f;
         }
 
-        // ============================================================
-        // Icon pulse (lub-dub heartbeat)
-        // ============================================================
-
-        void PulseIcon()
-        {
-            if (!enableIconPulse || iconTransform == null) return;
-
-            float beatsPerSecond = Mathf.Max(1f, bpm / 60f);
-            float phase = Mathf.Repeat(Time.time * beatsPerSecond, 1f);
-
-            float lub = Peak(phase, 0f, peakWidth);
-            float dub = Peak(phase, dubDelay, peakWidth) * dubStrength;
-            float pulse = Mathf.Clamp01(lub + dub);
-
-            float scale = iconBaseScale * (1f + pulse * iconPulseStrength);
-            iconTransform.localScale = Vector3.one * scale;
-        }
-
-        // ============================================================
-        // Helpers
-        // ============================================================
-
-        static float Peak(float x, float center, float width)
-        {
-            float d = Mathf.Abs(x - center);
-            d = Mathf.Min(d, 1f - d); // wrap
-            float w = Mathf.Max(0.0001f, width);
-            return Mathf.Exp(-(d * d) / (2f * w * w));
-        }
-
-        static float EaseInCubic(float x) => x * x * x;
-        static float EaseOutCubic(float x) => 1f - Mathf.Pow(1f - x, 3f);
         static float EaseInOutCubic(float x) =>
             x < 0.5f ? 4f * x * x * x : 1f - Mathf.Pow(-2f * x + 2f, 3f) / 2f;
 
