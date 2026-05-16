@@ -26,6 +26,8 @@ namespace Reach.Framework.Core
         [Header("Debug")]
         public bool debugLogs = false;
 
+        public event System.Action<bool> PauseToggled;
+
         public bool IsPaused { get; private set; }
 
         float _previousTimeScale = 1f;
