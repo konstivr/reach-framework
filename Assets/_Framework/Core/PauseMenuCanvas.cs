@@ -95,9 +95,8 @@ namespace Reach.Framework.Core
 
         void OnMainMenu()
         {
-            // Stub: reload scene until MainMenu exists
             Time.timeScale = 1f;
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            SceneManager.LoadScene("MainMenu");
         }
 
         void OnQuit()

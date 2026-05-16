@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d3463c91a1f54588ab5db1b9c896804, type: 3}
   m_Name: BLMK
   m_EditorClassIdentifier: Reach.Framework::Reach.Framework.Core.StoryPack
-  packName: BLMK
+  packName: im brandenburgischen Landesmuseum, Dieslkraftwerk Cottbus
   description: "Du stehst auf dem Vorplatz des Dieselkraftwerks Cottbus, direkt vor
     dem Brandenburgischen Landesmuseum f\xFCr moderne Kunst. "
   language: de

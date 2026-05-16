@@ -82,6 +82,24 @@ namespace Reach.Framework.Core
 
         PossessableCharacter ResolveStartCharacter()
         {
+            // 0) PlayerPrefs override (set by main menu char select)
+            string prefId = PlayerPrefs.GetString("ReachSelectedCharId", "");
+            if (!string.IsNullOrEmpty(prefId))
+            {
+                var ctx0 = GameContext.Instance;
+                if (ctx0 != null)
+                {
+                    foreach (var c in ctx0.Characters.All)
+                    {
+                        if (c != null && c.IsValid && c.Definition != null && c.Definition.characterId == prefId)
+                        {
+                            if (debugLogs) Debug.Log($"[PerspectiveManager] Using PlayerPrefs char: {prefId}");
+                            return c;
+                        }
+                    }
+                }
+            }
+
             // 1) Inspector override
             if (startCharacter != null && startCharacter.IsValid)
                 return startCharacter;

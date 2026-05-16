@@ -15,15 +15,15 @@ MonoBehaviour:
   objectPrefab: {fileID: 0}
   mode: 0
   interactRadius: 2.5
-  promptText: Press Interact
-  secondStepPromptText: Press again
+  promptText: "Dr\xFCck den linken Button (X), um zu interagieren"
+  secondStepPromptText: 'Versuch es mit: Was macht dich aus?'
   objectImage: {fileID: 21300000, guid: 1565df6a974e5438cb8474d615a9690a, type: 3}
   responsesPerCharacter:
   - character: {fileID: 11400000, guid: 1ccc531ed5381400c885007ea487318d, type: 2}
     responseText: "Wei\xDFt du, wir haben damals einfach die Musik laut aufgedreht,
       uns die Haare wachsen lassen und gehofft, dass der ganze graue Alltag um uns
       herum einfach wegfliegt."
-    responseDurationSeconds: 2.5
+    responseDurationSeconds: 8
     audioClip: {fileID: 8300000, guid: ac835a03ce4234d7a8533b6827d0ec93, type: 3}
     firstStepAudioClip: {fileID: 0}
     audioVolume: 1
@@ -31,21 +31,21 @@ MonoBehaviour:
     responseText: "Du, ich muss dir das ja eigentlich gar nicht erz\xE4hlen, du erlebst
       den ganzen Quatsch ja selbst jeden Tag. Da rufen wir gro\xDF die sexuelle Revolution
       aus, alle reden von Befreiung und freier Liebe, und was passiert?"
-    responseDurationSeconds: 2.5
+    responseDurationSeconds: 8
     audioClip: {fileID: 8300000, guid: 619a7e1e6696146a0a0d6fb5ab426301, type: 3}
     firstStepAudioClip: {fileID: 0}
     audioVolume: 1
   - character: {fileID: 11400000, guid: 91db1e5e981a64acc93b09b93f537acc, type: 2}
     responseText: "H\xF6r zu, Vater. Deine ganze Welt aus Schichtarbeit, Fabrik und
       \xDCberstunden, das ist nicht mein Leben."
-    responseDurationSeconds: 2.5
+    responseDurationSeconds: 8
     audioClip: {fileID: 8300000, guid: 5a4645b9e619b4ebdae6d84b16bfd15c, type: 3}
     firstStepAudioClip: {fileID: 0}
     audioVolume: 1
   defaultResponse:
     character: {fileID: 0}
     responseText: 
-    responseDurationSeconds: 1.5
+    responseDurationSeconds: 8
     audioClip: {fileID: 0}
     firstStepAudioClip: {fileID: 0}
     audioVolume: 1

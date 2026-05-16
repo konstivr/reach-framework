@@ -15,15 +15,15 @@ MonoBehaviour:
   objectPrefab: {fileID: 0}
   mode: 0
   interactRadius: 2.5
-  promptText: Press Interact
-  secondStepPromptText: Press again
+  promptText: "Dr\xFCck den linken Button (X), um zu interagieren"
+  secondStepPromptText: 'Versuch es mit: Was macht dich aus?'
   objectImage: {fileID: 21300000, guid: a97fbea4a9be34141bb6d1b8b83379a7, type: 3}
   responsesPerCharacter:
   - character: {fileID: 11400000, guid: 1ccc531ed5381400c885007ea487318d, type: 2}
     responseText: "Wei\xDFt du, wo deine Krise endet, f\xE4ngt unsere oft erst an.
       Du suchst nach dir selbst, das ist ein Luxus, den man sich leisten k\xF6nnen
       muss."
-    responseDurationSeconds: 2.5
+    responseDurationSeconds: 8
     audioClip: {fileID: 8300000, guid: 5083ad7c60e87419d9f17a7ad929d983, type: 3}
     firstStepAudioClip: {fileID: 0}
     audioVolume: 1
@@ -31,7 +31,7 @@ MonoBehaviour:
     responseText: "Du wei\xDFt, wie es ist, wenn ein System kollabiert. Sozialismus
       erlebt, Kapitalismus. Aber du hattest eine feste Erz\xE4hlung, an der du dich
       abarbeiten konntest, ein Vorher und ein Nachher."
-    responseDurationSeconds: 2.5
+    responseDurationSeconds: 8
     audioClip: {fileID: 8300000, guid: ef730146fb8674cf0bdd5a60011908c7, type: 3}
     firstStepAudioClip: {fileID: 0}
     audioVolume: 1
@@ -39,14 +39,14 @@ MonoBehaviour:
     responseText: "Du hast dein Leben lang gelernt, dass die Welt aus Fundamenten
       besteht. Dass Mauern tragen h\xFCssen und dass ein Mann ein Mann ist und eine
       Frau eine Frau."
-    responseDurationSeconds: 2.5
+    responseDurationSeconds: 8
     audioClip: {fileID: 8300000, guid: 456762c845b524477a06b6454a7fd38e, type: 3}
     firstStepAudioClip: {fileID: 0}
     audioVolume: 1
   defaultResponse:
     character: {fileID: 0}
     responseText: 
-    responseDurationSeconds: 1.5
+    responseDurationSeconds: 8
     audioClip: {fileID: 0}
     firstStepAudioClip: {fileID: 0}
     audioVolume: 1

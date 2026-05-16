@@ -15,35 +15,35 @@ MonoBehaviour:
   objectPrefab: {fileID: 0}
   mode: 0
   interactRadius: 2.5
-  promptText: Press Interact
-  secondStepPromptText: Press again
+  promptText: "Dr\xFCck den linken Button (X), um zu interagieren"
+  secondStepPromptText: 'Versuch es mit: Was macht dich aus?'
   objectImage: {fileID: 21300000, guid: 9f665d829a1224990b7f778f9026178e, type: 3}
   responsesPerCharacter:
   - character: {fileID: 11400000, guid: 1ccc531ed5381400c885007ea487318d, type: 2}
     responseText: "Du sitzt da, guckst auf dein kleines Ger\xE4t und wei\xDFt vor
       lauter Freiheit gar nicht, wo du hinlaufen sollst?"
-    responseDurationSeconds: 2.5
+    responseDurationSeconds: 8
     audioClip: {fileID: 8300000, guid: 8a0c57bcf071f4df4be24548e159b90e, type: 3}
     firstStepAudioClip: {fileID: 0}
     audioVolume: 1
   - character: {fileID: 11400000, guid: b2d59cdd774a143458305807edd6c6c6, type: 2}
     responseText: Schau mich an, meine Kleine. Du musst dich vor keinem Mann mehr
       ducken.
-    responseDurationSeconds: 2.5
+    responseDurationSeconds: 8
     audioClip: {fileID: 8300000, guid: 39e68878277b74394b4cf08ebfb9ca08, type: 3}
     firstStepAudioClip: {fileID: 0}
     audioVolume: 1
   - character: {fileID: 11400000, guid: 91db1e5e981a64acc93b09b93f537acc, type: 2}
     responseText: Du guckst da hoch in den blauen Himmel, Junge, und du siehst nur
       Wolken. Wir haben da oben den Tod gesehen.
-    responseDurationSeconds: 2.5
+    responseDurationSeconds: 8
     audioClip: {fileID: 8300000, guid: ddd2166741bc54874a0ce41b26cac962, type: 3}
     firstStepAudioClip: {fileID: 0}
     audioVolume: 1
   defaultResponse:
     character: {fileID: 0}
     responseText: 
-    responseDurationSeconds: 1.5
+    responseDurationSeconds: 8
     audioClip: {fileID: 0}
     firstStepAudioClip: {fileID: 0}
     audioVolume: 1

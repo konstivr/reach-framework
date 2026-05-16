@@ -104,9 +104,8 @@ namespace Reach.Framework.Core
 
         void OnEndscreenFinished()
         {
-            if (debugLogs) Debug.Log("[Endscreen] Finished — reloading scene");
-            // Stub for MainMenu — reload current scene for now
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            if (debugLogs) Debug.Log("[Endscreen] Finished — loading MainMenu");
+            SceneManager.LoadScene("MainMenu");
         }
     }
 }

@@ -250,19 +250,19 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: d7087fc15946043bb836f556c8090300, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -29.1
+      value: -31.17
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d7087fc15946043bb836f556c8090300, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -0.494
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d7087fc15946043bb836f556c8090300, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -43.3
+      value: -20
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d7087fc15946043bb836f556c8090300, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d7087fc15946043bb836f556c8090300, type: 3}
       propertyPath: m_LocalRotation.x
@@ -270,7 +270,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d7087fc15946043bb836f556c8090300, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d7087fc15946043bb836f556c8090300, type: 3}
       propertyPath: m_LocalRotation.z
@@ -282,7 +282,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d7087fc15946043bb836f556c8090300, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 180
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: d7087fc15946043bb836f556c8090300, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -290,7 +290,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: d7087fc15946043bb836f556c8090300, type: 3}
       propertyPath: m_Name
-      value: charC_marlene
+      value: charC_lutz
       objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: d7087fc15946043bb836f556c8090300, type: 3}
       propertyPath: m_Controller
@@ -1264,6 +1264,94 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!1 &785270470
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 785270474}
+  - component: {fileID: 785270473}
+  - component: {fileID: 785270472}
+  - component: {fileID: 785270471}
+  m_Layer: 5
+  m_Name: BlackOverlay
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!225 &785270471
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 785270470}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
+--- !u!114 &785270472
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 785270470}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &785270473
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 785270470}
+  m_CullTransparentMesh: 1
+--- !u!224 &785270474
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 785270470}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1633574847}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &805196167
 GameObject:
   m_ObjectHideFlags: 0
@@ -1712,7 +1800,7 @@ Transform:
   m_GameObject: {fileID: 867898025}
   serializedVersion: 2
   m_LocalRotation: {x: 0.17364816, y: 0.000000030252835, z: -0.0000000053343907, w: 0.9848078}
-  m_LocalPosition: {x: 15.6, y: 0.43010068, z: -104.098465}
+  m_LocalPosition: {x: 15.6, y: 0.23010063, z: -104.098465}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1884,7 +1972,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13c02403a56bd426587696266d0eb938, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Reach.Framework::Reach.Framework.Core.PossessableCharacter
-  definition: {fileID: 11400000, guid: 2f18218059ad54616bf8a0a9bdf7f520, type: 2}
+  definition: {fileID: 11400000, guid: 91db1e5e981a64acc93b09b93f537acc, type: 2}
   movementComponent: {fileID: 0}
   wanderComponent: {fileID: 0}
   cameraTarget: {fileID: 0}
@@ -1925,6 +2013,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1019834406}
   - component: {fileID: 1019834407}
+  - component: {fileID: 1019834408}
   m_Layer: 5
   m_Name: CharacterImageGroup
   m_TagString: Untagged
@@ -1950,7 +2039,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 600, y: 600}
+  m_SizeDelta: {x: 500, y: 700}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!225 &1019834407
 CanvasGroup:
@@ -1964,6 +2053,19 @@ CanvasGroup:
   m_Interactable: 0
   m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
+--- !u!114 &1019834408
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1019834405}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 31a19414c41e5ae4aae2af33fee712f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Mask
+  m_ShowMaskGraphic: 1
 --- !u!1 &1218571301
 GameObject:
   m_ObjectHideFlags: 0
@@ -1980,7 +2082,7 @@ GameObject:
   - component: {fileID: 1218571303}
   - component: {fileID: 1218571302}
   m_Layer: 0
-  m_Name: objectB_harald (monitor)
+  m_Name: obj_68er
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1998,7 +2100,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fb005db7efda49b88f7028f55a8badf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Reach.Framework::Reach.Framework.Interaction.InteractableObject
-  definition: {fileID: 11400000, guid: efbfc831c216e4e188ca21e61337c5bd, type: 2}
+  definition: {fileID: 11400000, guid: 7747d27193c574d308f46b45834bd96b, type: 2}
   audioSource: {fileID: 0}
   debugLogs: 0
 --- !u!114 &1218571303
@@ -2082,7 +2184,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: b9bc7915148db4676bec4d7c0292d7b8, type: 2}
+  - {fileID: 2100000, guid: ba409d9df9a9a4d8c9514e7bb2e56fd7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2219,7 +2321,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13c02403a56bd426587696266d0eb938, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Reach.Framework::Reach.Framework.Core.PossessableCharacter
-  definition: {fileID: 11400000, guid: a199ff210a56545938efceb8d561b6fa, type: 2}
+  definition: {fileID: 11400000, guid: b2d59cdd774a143458305807edd6c6c6, type: 2}
   movementComponent: {fileID: 0}
   wanderComponent: {fileID: 0}
   cameraTarget: {fileID: 0}
@@ -2538,13 +2640,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Reach.Framework::Reach.Framework.HUD.HudText
   textTMP: {fileID: 1449144860}
-  initialIdleText: Reach out to interact
-  perspectiveIdleText: Talk to me
+  initialIdleText: Gehe auf andere zu
+  perspectiveIdleText: "Halte den unteren Button (X) gedr\xFCckt, um mich etwas zu
+    fragen"
   playIntroOnStart: 1
   introTexts:
-  - Press Interact to reach out
-  - Walk closer to a person to reach out
-  - Hold the right button to speak
+  - 'Du stehst auf dem Vorplatz des Dieselkraftwerks, direkt hier vor dem Museum. '
+  - Gehe auf andere Personen oder Kunstwerke zu, um mit ihnen zu interagieren.
+  - "\xDCber den linken Button (X) kannst du mit Personen oder Kunstwerken interagieren."
   introSecondsPerText: 5
   debugLogs: 0
 --- !u!1 &1458705971
@@ -2563,7 +2666,7 @@ GameObject:
   - component: {fileID: 1458705977}
   - component: {fileID: 1458705976}
   m_Layer: 0
-  m_Name: objectA_erich (telefon)
+  m_Name: obj_industriemoderne
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2616,7 +2719,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 403b4493de4d544d6a692b19114c8cd4, type: 2}
+  - {fileID: 2100000, guid: 184b7564f93074ab6a41dc3008cfe6d7, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2675,7 +2778,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fb005db7efda49b88f7028f55a8badf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Reach.Framework::Reach.Framework.Interaction.InteractableObject
-  definition: {fileID: 11400000, guid: 11a4246a5096c4d028022ee18adb437e, type: 2}
+  definition: {fileID: 11400000, guid: 01d07247b213c4e87801bea3f156811a, type: 2}
   audioSource: {fileID: 0}
   debugLogs: 0
 --- !u!114 &1458705977
@@ -2802,7 +2905,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13c02403a56bd426587696266d0eb938, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Reach.Framework::Reach.Framework.Core.PossessableCharacter
-  definition: {fileID: 11400000, guid: 19a4b3b536db9472fb70f348ad7c0111, type: 2}
+  definition: {fileID: 11400000, guid: 1ccc531ed5381400c885007ea487318d, type: 2}
   movementComponent: {fileID: 0}
   wanderComponent: {fileID: 0}
   cameraTarget: {fileID: 0}
@@ -2926,7 +3029,7 @@ Transform:
   m_GameObject: {fileID: 1591475362}
   serializedVersion: 2
   m_LocalRotation: {x: 0.17364816, y: 0.000000030252835, z: -0.0000000053343903, w: 0.9848078}
-  m_LocalPosition: {x: 15.6, y: 0.43010068, z: -104.098465}
+  m_LocalPosition: {x: 15.6, y: 0.23010063, z: -104.098465}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3209,20 +3312,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92d6337e184f94d2499fc80c80bcab2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Reach.Framework::Reach.Framework.FX.ReachTransitionFX
-  transitionVolume: {fileID: 0}
-  transitionVolumeMax: 1
   sfxSource: {fileID: 0}
   transitionSfx: {fileID: 0}
   sfxVolume: 0.9
-  topBar: {fileID: 1695595347}
-  bottomBar: {fileID: 1990236596}
+  blackOverlay: {fileID: 785270471}
   imageGroup: {fileID: 1019834407}
   characterImage: {fileID: 1943136884}
-  closeSeconds: 0.6
-  openToImageSeconds: 0.4
+  blackFadeInSeconds: 1.5
+  imageFadeInSeconds: 0.5
   holdImageSeconds: 1.5
-  closeAgainSeconds: 0.5
-  openFinalSeconds: 0.6
+  imageFadeOutSeconds: 0.5
+  blackFadeOutSeconds: 1.5
   settleAfterSeconds: 0.1
   debugLogs: 1
 --- !u!114 &1633574844
@@ -3302,6 +3402,7 @@ RectTransform:
   m_Children:
   - {fileID: 1695595347}
   - {fileID: 1990236596}
+  - {fileID: 785270474}
   - {fileID: 1019834406}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3320,19 +3421,19 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: a7baf15222c61400d92fee199d828b71, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 22.3
+      value: 20.52
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a7baf15222c61400d92fee199d828b71, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -1.91
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a7baf15222c61400d92fee199d828b71, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -48.11
+      value: -58.82
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a7baf15222c61400d92fee199d828b71, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.7071068
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a7baf15222c61400d92fee199d828b71, type: 3}
       propertyPath: m_LocalRotation.x
@@ -3340,7 +3441,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a7baf15222c61400d92fee199d828b71, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.7071068
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a7baf15222c61400d92fee199d828b71, type: 3}
       propertyPath: m_LocalRotation.z
@@ -3352,7 +3453,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a7baf15222c61400d92fee199d828b71, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: -90
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a7baf15222c61400d92fee199d828b71, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -3360,7 +3461,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: a7baf15222c61400d92fee199d828b71, type: 3}
       propertyPath: m_Name
-      value: charB_erik
+      value: charB_monika
       objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: a7baf15222c61400d92fee199d828b71, type: 3}
       propertyPath: m_Controller
@@ -3407,7 +3508,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1695595347
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4264,6 +4365,7 @@ GameObject:
   - component: {fileID: 1943136886}
   - component: {fileID: 1943136885}
   - component: {fileID: 1943136884}
+  - component: {fileID: 1943136887}
   m_Layer: 5
   m_Name: CharacterImage
   m_TagString: Untagged
@@ -4326,8 +4428,22 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 757.9208, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1943136887
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1943136883}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.AspectRatioFitter
+  m_AspectMode: 4
+  m_AspectRatio: 1.7970296
 --- !u!1001 &1959785370
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4342,7 +4458,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 48df6733e717d417586eda6eede1ce2b, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.28
+      value: -1.48
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 48df6733e717d417586eda6eede1ce2b, type: 3}
       propertyPath: m_LocalPosition.z
@@ -4378,7 +4494,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 48df6733e717d417586eda6eede1ce2b, type: 3}
       propertyPath: m_Name
-      value: charA_bauer
+      value: charA_jakob
       objectReference: {fileID: 0}
     - target: {fileID: 5866666021909216657, guid: 48df6733e717d417586eda6eede1ce2b, type: 3}
       propertyPath: m_Enabled
@@ -4428,7 +4544,7 @@ GameObject:
   - component: {fileID: 1966658284}
   - component: {fileID: 1966658283}
   m_Layer: 0
-  m_Name: objectc_lea (brief)
+  m_Name: obj_postsozialistisch
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4446,7 +4562,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fb005db7efda49b88f7028f55a8badf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Reach.Framework::Reach.Framework.Interaction.InteractableObject
-  definition: {fileID: 11400000, guid: ac307db8c059a4c0ea6e609c94cd7a1d, type: 2}
+  definition: {fileID: 11400000, guid: 34e3feb671cdf4aa99631c51ad784ab7, type: 2}
   audioSource: {fileID: 0}
   debugLogs: 0
 --- !u!114 &1966658284
@@ -4530,7 +4646,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 98cb1167070294f85ad334a0f2ecce18, type: 2}
+  - {fileID: 2100000, guid: bd238748e6d1d48eab5f0398a1c647d9, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4594,7 +4710,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1990236596
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4786,9 +4902,6 @@ GameObject:
   - component: {fileID: 2088553897}
   - component: {fileID: 2088553909}
   - component: {fileID: 2088553908}
-  - component: {fileID: 2088553907}
-  - component: {fileID: 2088553906}
-  - component: {fileID: 2088553905}
   - component: {fileID: 2088553904}
   - component: {fileID: 2088553903}
   - component: {fileID: 2088553902}
@@ -4856,7 +4969,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47f25a776be374db7a11bf58839495b9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Reach.Framework::Reach.Framework.Core.GameContext
-  pack: {fileID: 11400000, guid: ec64b2144219f4e599b5972308b6f300, type: 2}
+  pack: {fileID: 11400000, guid: c33e06e0a4193433c973b96ebd4081aa, type: 2}
   input: {fileID: 2088553897}
 --- !u!4 &2088553899
 Transform:
@@ -4917,9 +5030,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Reach.Framework::Reach.Framework.Interaction.InteractionRouter
   maxObjectScanRadius: 3
-  promptReachOut: Press Interact to reach out
-  promptGateWaiting: Press Speak.
-  promptObjectFallback: Press Interact
+  promptReachOut: "Dr\xFCck den linken Button (X), um zu interagieren"
+  promptGateWaiting: Warte...
+  promptObjectFallback: "Dr\xFCck den linken Button (X), um zu interagieren"
   debugLogs: 0
 --- !u!114 &2088553903
 MonoBehaviour:
@@ -4937,9 +5050,9 @@ MonoBehaviour:
   frequency: 16000
   minHoldSeconds: 1
   maxRecordSeconds: 15
-  recordingPrompt: Speak and wait...
-  sendingPrompt: Sending...
-  canceledPrompt: Canceled.
+  recordingPrompt: Sprich und warte...
+  sendingPrompt: Deine Nachricht sendet...
+  canceledPrompt: Abgebrochen
   tooShortPrompt: "Zu kurz \u2014 l\xE4nger halten."
   debugLogs: 1
 --- !u!114 &2088553904
@@ -4959,61 +5072,12 @@ MonoBehaviour:
   cancelOnLeaveRadius: 1
   passphraseTimeoutSeconds: 12
   gateTriggerCooldown: 0.35
-  promptAfterGateSpoken: Press Speak.
-  promptNoMatch: "No match \u2014 try again."
+  promptAfterGateSpoken: "Halte den unteren Button (A) gedr\xFCckt, um zu sprechen"
+  promptNoMatch: 'Versuch es mit: Was macht dich aus? '
   afterGatePromptDelaySeconds: 0.25
   useOutreachLock: 1
-  outreachLockedMessage: Finish your task before reaching out.
+  outreachLockedMessage: "Sprich zuerst mit einem Gem\xE4lde"
   outreachLockedMessageSeconds: 1.6
-  debugLogs: 1
---- !u!114 &2088553905
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2088553896}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 565e5999e69f84ed1ae914c283686888, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Reach.Framework::Reach.Framework.Dialogue.StubChatBackend
-  fixedReply: I hear you. (This is a stub reply.)
-  simulatedDelaySeconds: 0.5
-  debugLogs: 1
---- !u!114 &2088553906
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2088553896}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0d0b73b1c30f44f888bd10772717856b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Reach.Framework::Reach.Framework.Dialogue.StubTextToSpeech
-  frequency: 440
-  secondsPerChar: 0.05
-  minSeconds: 0.4
-  maxSeconds: 4
-  amplitude: 0.2
-  sampleRate: 22050
-  debugLogs: 1
---- !u!114 &2088553907
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2088553896}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 70be75cd9b57c447c8c3aaa165395a6f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Reach.Framework::Reach.Framework.Dialogue.StubSpeechToText
-  fixedTranscript: say something
-  simulatedDelaySeconds: 0.3
   debugLogs: 1
 --- !u!114 &2088553908
 MonoBehaviour:

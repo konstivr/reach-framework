@@ -1,7 +1,6 @@
+using System.Collections;
 using System.Threading.Tasks;
-using TMPro;
 using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEngine.UI;
 using Reach.Framework.Core;
 using Reach.Framework.HUD;
@@ -9,42 +8,33 @@ using Reach.Framework.HUD;
 namespace Reach.Framework.FX
 {
     /// <summary>
-    /// Eye-close transition for perspective switches.
-    ///
-    /// Choreography:
-    ///   1) Close: bars slide to center (eyes close)
-    ///   2) Open to image: bars slide back, revealing fullscreen char image
-    ///   3) Hold image (with switch happening)
-    ///   4) Close again: bars slide to center
-    ///   5) Open final: bars slide back, revealing new perspective
+    /// Simple fade transition for perspective switches.
+    /// Black overlay fades in → centered character image appears →
+    /// hold (switch happens) → image fades out → black fades out.
     /// </summary>
     public class ReachTransitionFX : MonoBehaviour, IReachTransition
     {
-        [Header("PostFX")]
-        public Volume transitionVolume;
-        [Range(0f, 1f)] public float transitionVolumeMax = 1f;
-
         [Header("Audio")]
         public AudioSource sfxSource;
         public AudioClip transitionSfx;
         [Range(0f, 1f)] public float sfxVolume = 0.9f;
 
-        [Header("Bars (eye close/open)")]
-        [Tooltip("Top bar that slides down. Anchor: top-stretch, Pivot Y=1.")]
-        public RectTransform topBar;
-        [Tooltip("Bottom bar that slides up. Anchor: bottom-stretch, Pivot Y=0.")]
-        public RectTransform bottomBar;
+        [Header("UI References")]
+        [Tooltip("CanvasGroup that holds the fullscreen black overlay.")]
+        public CanvasGroup blackOverlay;
 
-        [Header("Character Image (shown fullscreen between phases)")]
+        [Tooltip("CanvasGroup that holds the centered character image.")]
         public CanvasGroup imageGroup;
+
+        [Tooltip("Character image (centered, small in middle).")]
         public Image characterImage;
 
         [Header("Timing")]
-        public float closeSeconds = 0.5f;
-        public float openToImageSeconds = 0.4f;
-        public float holdImageSeconds = 1.5f;
-        public float closeAgainSeconds = 0.5f;
-        public float openFinalSeconds = 0.6f;
+        public float blackFadeInSeconds = 1.5f;
+        public float imageFadeInSeconds = 0.5f;
+        public float holdImageSeconds = 2.0f;
+        public float imageFadeOutSeconds = 0.5f;
+        public float blackFadeOutSeconds = 1.5f;
         public float settleAfterSeconds = 0.1f;
 
         [Header("Debug")]
@@ -57,56 +47,63 @@ namespace Reach.Framework.FX
         bool _isTransitioning;
         public bool IsTransitioning => _isTransitioning;
 
-        // ============================================================
-        // Lifecycle
-        // ============================================================
+        TaskCompletionSource<bool> _completionTcs;
 
         void Awake()
         {
-            // Force bars fully off-screen at rest, image hidden
-            if (transitionVolume != null) transitionVolume.weight = 0f;
+            if (blackOverlay != null) blackOverlay.alpha = 0f;
             if (imageGroup != null) imageGroup.alpha = 0f;
-            SetBarOpenness(1f);
         }
 
         void OnEnable()
         {
-            // Belt-and-suspenders: ensure bars hidden even after scene reloads
-            SetBarOpenness(1f);
+            if (blackOverlay != null) blackOverlay.alpha = 0f;
+            if (imageGroup != null) imageGroup.alpha = 0f;
         }
 
         // ============================================================
         // Public API
         // ============================================================
 
-        /// <summary>
-        /// Plays only the close phase. Used by Endscreen to fade out without switching.
-        /// </summary>
-        public async System.Threading.Tasks.Task PlayCloseOnlyAsync()
+        public Task<bool> PlayAndSwitchAsync(PossessableCharacter target)
         {
-            if (_isTransitioning) return;
-            _isTransitioning = true;
-            await AnimateBars(1f, 0f, closeSeconds);
-            // Bars stay closed — caller is responsible for further visuals
-            _isTransitioning = false;
+            if (_isTransitioning) return Task.FromResult(false);
+            _completionTcs = new TaskCompletionSource<bool>();
+            StartCoroutine(PlayAndSwitchRoutine(target));
+            return _completionTcs.Task;
         }
 
-        public async Task<bool> PlayAndSwitchAsync(PossessableCharacter target)
+        public Task PlayCloseOnlyAsync()
         {
-            if (_isTransitioning) return false;
+            if (_isTransitioning) return Task.CompletedTask;
+            var tcs = new TaskCompletionSource<bool>();
+            StartCoroutine(PlayCloseOnlyRoutine(tcs));
+            return tcs.Task;
+        }
+
+        // ============================================================
+        // Coroutines
+        // ============================================================
+
+        IEnumerator PlayAndSwitchRoutine(PossessableCharacter target)
+        {
+            _isTransitioning = true;
 
             var ctx = GameContext.Instance;
-            if (ctx == null || ctx.Perspective == null) return false;
+            if (ctx == null || ctx.Perspective == null)
+            {
+                _isTransitioning = false;
+                _completionTcs?.SetResult(false);
+                yield break;
+            }
 
-            _isTransitioning = true;
-            if (debugLogs) Debug.Log($"[ReachFX] Transition INTO \'{target?.name}\'");
-
+            if (debugLogs) Debug.Log($"[ReachFX] Transition INTO '{target?.name}'");
             ctx.Hud?.SetFXOverride("");
 
             if (sfxSource != null && transitionSfx != null)
                 sfxSource.PlayOneShot(transitionSfx, sfxVolume);
 
-            // Set image (hidden via CanvasGroup alpha until phase 2)
+            // Set character image
             bool hasImage = false;
             if (characterImage != null)
             {
@@ -114,6 +111,7 @@ namespace Reach.Framework.FX
                 {
                     characterImage.sprite = target.Definition.transitionImage;
                     characterImage.enabled = true;
+                    characterImage.preserveAspect = true;
                     hasImage = true;
                 }
                 else
@@ -122,120 +120,66 @@ namespace Reach.Framework.FX
                 }
             }
 
-            // ---- Phase 1: Close (eyes shut) ----
-            await AnimateBars(1f, 0f, closeSeconds);
+            // Phase 1: Black fade in
+            yield return FadeCanvasGroup(blackOverlay, 0f, 1f, blackFadeInSeconds);
 
-            // Switch happens NOW (under cover of closed bars)
+            // Switch under cover of black
             bool switched = ctx.Perspective.TrySwitchTo(target);
 
-            // ---- Phase 2: Open to reveal fullscreen image ----
+            // Phase 2: Image fade in
             if (hasImage && imageGroup != null)
             {
-                imageGroup.alpha = 1f; // image visible while bars open
-                await AnimateBars(0f, 1f, openToImageSeconds);
+                yield return FadeCanvasGroup(imageGroup, 0f, 1f, imageFadeInSeconds);
 
-                // ---- Phase 3: Hold fullscreen image ----
-                await Wait(holdImageSeconds);
+                // Phase 3: Hold
+                yield return new WaitForSeconds(holdImageSeconds);
 
-                // ---- Phase 4: Close again ----
-                await AnimateBars(1f, 0f, closeAgainSeconds);
-
-                imageGroup.alpha = 0f; // hide image while bars are closed
+                // Phase 4: Image fade out
+                yield return FadeCanvasGroup(imageGroup, 1f, 0f, imageFadeOutSeconds);
             }
             else
             {
-                // No image — just hold briefly while closed
-                await Wait(holdImageSeconds * 0.3f);
+                yield return new WaitForSeconds(holdImageSeconds * 0.3f);
             }
 
-            // ---- Phase 5: Open final (reveal new perspective) ----
-            await AnimateBars(0f, 1f, openFinalSeconds);
+            // Phase 5: Black fade out
+            yield return FadeCanvasGroup(blackOverlay, 1f, 0f, blackFadeOutSeconds);
 
-            await Wait(settleAfterSeconds);
+            yield return new WaitForSeconds(settleAfterSeconds);
 
-            // Reset
-            if (transitionVolume != null) transitionVolume.weight = 0f;
             ctx.Hud?.ClearFXOverride();
 
             _isTransitioning = false;
             if (debugLogs) Debug.Log($"[ReachFX] Done (switch={switched})");
-            return switched;
+            _completionTcs?.SetResult(switched);
+            _completionTcs = null;
         }
 
-        // ============================================================
-        // Bar animation
-        // ============================================================
-
-        /// <summary>
-        /// openness: 1 = bars pushed fully off-screen (open eyes),
-        ///           0 = bars meet at center (closed eyes).
-        /// </summary>
-        async Task AnimateBars(float fromOpenness, float toOpenness, float duration)
+        IEnumerator PlayCloseOnlyRoutine(TaskCompletionSource<bool> tcs)
         {
+            _isTransitioning = true;
+            yield return FadeCanvasGroup(blackOverlay, 0f, 1f, blackFadeInSeconds);
+            _isTransitioning = false;
+            tcs.SetResult(true);
+        }
+
+        IEnumerator FadeCanvasGroup(CanvasGroup group, float from, float to, float duration)
+        {
+            if (group == null) yield break;
+
             float t = 0f;
             while (t < duration)
             {
                 t += Time.deltaTime;
                 float k = Mathf.Clamp01(t / duration);
                 float eased = EaseInOutCubic(k);
-                float openness = Mathf.Lerp(fromOpenness, toOpenness, eased);
-                SetBarOpenness(openness);
-                await Task.Yield();
+                group.alpha = Mathf.Lerp(from, to, eased);
+                yield return null;
             }
-            SetBarOpenness(toOpenness);
-        }
-
-        /// <summary>
-        /// openness 1 = bars off-screen (above top / below bottom of screen),
-        /// openness 0 = bars cover their half of screen (meet at center).
-        /// Each bar fills exactly HALF the screen when openness = 0.
-        /// </summary>
-        void SetBarOpenness(float openness)
-        {
-            float screenH = Screen.height;
-            float halfH = screenH * 0.5f;
-
-            // Set bar height to cover half the screen
-            if (topBar != null)
-            {
-                Vector2 size = topBar.sizeDelta;
-                size.y = halfH;
-                topBar.sizeDelta = size;
-
-                // Pivot Y = 1 (top), so anchoredPosition.y of 0 = bar's top edge at top of canvas
-                // openness 0 → anchoredPosition.y = 0 (bar fully visible, hangs down from top)
-                // openness 1 → anchoredPosition.y = +halfH (bar fully above screen)
-                Vector2 pos = topBar.anchoredPosition;
-                pos.y = openness * halfH;
-                topBar.anchoredPosition = pos;
-            }
-
-            if (bottomBar != null)
-            {
-                Vector2 size = bottomBar.sizeDelta;
-                size.y = halfH;
-                bottomBar.sizeDelta = size;
-
-                // Pivot Y = 0 (bottom), so anchoredPosition.y of 0 = bar's bottom edge at bottom of canvas
-                // openness 0 → anchoredPosition.y = 0 (bar fully visible, rises up from bottom)
-                // openness 1 → anchoredPosition.y = -halfH (bar fully below screen)
-                Vector2 pos = bottomBar.anchoredPosition;
-                pos.y = -openness * halfH;
-                bottomBar.anchoredPosition = pos;
-            }
+            group.alpha = to;
         }
 
         static float EaseInOutCubic(float x) =>
             x < 0.5f ? 4f * x * x * x : 1f - Mathf.Pow(-2f * x + 2f, 3f) / 2f;
-
-        static async Task Wait(float seconds)
-        {
-            float t = 0f;
-            while (t < seconds)
-            {
-                t += Time.deltaTime;
-                await Task.Yield();
-            }
-        }
     }
 }
