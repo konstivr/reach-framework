@@ -129,19 +129,8 @@ namespace Reach.Framework.Core
                 return false;
             }
 
-            if (_visited.Contains(target))
-            {
-                if (debugLogs) Debug.Log($"[PerspectiveManager] Switch refused: '{target.name}' already visited.");
-                return false;
-            }
-
-            int max = MaxPerspectives;
-            if (max > 0 && VisitedCount >= max)
-            {
-                if (debugLogs) Debug.Log("[PerspectiveManager] Switch refused: all perspectives visited.");
-                return false;
-            }
-
+            // Re-switching to an already-visited character is allowed (player can revisit).
+            // VisitedCount only grows, used for Endscreen trigger.
             return DoSwitch(Current, target);
         }
 

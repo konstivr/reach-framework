@@ -114,8 +114,8 @@ namespace Reach.Framework.Interaction
             var pm = ctx.Perspective;
             if (pm == null || pm.Current == null) return;
 
-            // Find nearest unvisited valid character within radius
-            _nearestTarget = FindNearestUnvisited(pm.Current.transform.position, gateRadius);
+            // Find nearest valid character within radius (visited or not)
+            _nearestTarget = FindNearestTarget(pm.Current.transform.position, gateRadius);
 
             // Passphrase timeout (only while actually waiting and not suspended)
             if (_waitingForPassphrase && !_timeoutSuspended && _activeTarget != null)
@@ -143,7 +143,7 @@ namespace Reach.Framework.Interaction
             }
         }
 
-        PossessableCharacter FindNearestUnvisited(Vector3 from, float radius)
+        PossessableCharacter FindNearestTarget(Vector3 from, float radius)
         {
             var ctx = GameContext.Instance;
             if (ctx == null || ctx.Perspective == null) return null;
@@ -156,7 +156,7 @@ namespace Reach.Framework.Interaction
             {
                 if (c == null || !c.IsValid) continue;
                 if (c == current) continue;
-                if (ctx.Perspective.HasVisited(c)) continue;
+                // Visited characters can be revisited — no filter here.
 
                 float sqr = (c.transform.position - from).sqrMagnitude;
                 if (sqr <= bestSqr)
