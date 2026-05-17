@@ -71,3 +71,15 @@ crashlytics-build.properties
 
 # Files too large for GitHub
 *Ch10*
+
+# Reallusion Character Creator source files (too large)
+*.ccProject
+*.ccProject.meta
+
+# Debug logs
+**/debug.log
+**/debug.log.meta
+
+# Character bodies — too large for git, sync manually to other machines
+Assets/_Packs/*/Characters/bodys/
+Assets/_Packs/*/Characters/bodys.meta
