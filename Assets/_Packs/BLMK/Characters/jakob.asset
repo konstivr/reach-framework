@@ -29,7 +29,7 @@ MonoBehaviour:
     auch bei jeder Aussage eigene Add-Ons f\xFCr deinen Charakter. Das generelle
     Thema ist der Einfluss von extremen politschen Systemen und sozial\xF6konomischen
     Situationen auf die Identit\xE4tsbildung."
-  voiceMacOS: Samantha
+  voiceMacOS: thorsten-medium
   voiceWindows: Zira
   transitionImage: {fileID: 21300000, guid: 12f0abc0f38cf46aba50a28bcda754cb, type: 3}
   ambientLoop: {fileID: 0}

@@ -4911,6 +4911,7 @@ GameObject:
   - component: {fileID: 2088553911}
   - component: {fileID: 2088553910}
   - component: {fileID: 2088553913}
+  - component: {fileID: 2088553914}
   m_Layer: 0
   m_Name: Systems
   m_TagString: Untagged
@@ -5093,7 +5094,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Reach.Framework::Reach.Framework.Dialogue.SpeechSystem
   speechToText: {fileID: 2088553912}
-  textToSpeech: {fileID: 2088553911}
+  textToSpeech: {fileID: 2088553914}
   chatBackend: {fileID: 2088553910}
   debugLogs: 1
 --- !u!114 &2088553909
@@ -5133,7 +5134,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2088553896}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4f83bd5d3829a40a39880be12819d6d0, type: 3}
   m_Name: 
@@ -5171,8 +5172,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Reach.Framework::Reach.Framework.Audio.AudioLayerSystem
   mixerGroup: {fileID: 0}
-  masterVolume: 0.25
+  masterVolume: 0.01
   fadeInSeconds: 1.5
+  debugLogs: 1
+--- !u!114 &2088553914
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2088553896}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b7d9bab07bb7643c6874fe4d39ddc8a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Reach.Framework::Reach.Framework.Dialogue.PiperTTS
+  piperBinaryPath: 
+  voicesFolder: ~/piper-voices/de
+  defaultVoice: thorsten-medium
   debugLogs: 1
 --- !u!1 &2107332638
 GameObject:
