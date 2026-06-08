@@ -20,6 +20,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 1ccc531ed5381400c885007ea487318d, type: 2}
   - {fileID: 11400000, guid: b2d59cdd774a143458305807edd6c6c6, type: 2}
   - {fileID: 11400000, guid: 91db1e5e981a64acc93b09b93f537acc, type: 2}
+  introAudio: {fileID: 8300000, guid: 067e75900f76b4d6a94e607e4e23bd13, type: 3}
+  introDelaySeconds: 1
   musicLayers:
   - {fileID: 8300000, guid: 1df5fbba3ce2a4dddb43c40f98cdda29, type: 3}
   - {fileID: 8300000, guid: 2f16aaec9e2f240dc85581525ab83bfd, type: 3}

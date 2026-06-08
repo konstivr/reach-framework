@@ -280,7 +280,7 @@ namespace Reach.Framework.Interaction
             if (_afterGatePromptRoutine != null) StopCoroutine(_afterGatePromptRoutine);
             _afterGatePromptRoutine = StartCoroutine(CoAfterGatePrompt(target, clip));
 
-            if (debugLogs) Debug.Log("[GateSystem] Gate line played -> waiting for passphrase.");
+            if (debugLogs) Debug.Log("[GateSystem] Gate line played");
         }
 
         IEnumerator CoAfterGatePrompt(PossessableCharacter target, AudioClip clip)
@@ -294,18 +294,45 @@ namespace Reach.Framework.Interaction
             if (afterGatePromptDelaySeconds > 0f)
                 yield return new WaitForSeconds(afterGatePromptDelaySeconds);
 
+            // Run still valid?
             if (_activeTarget != target) yield break;
-            if (!_waitingForPassphrase) yield break;
 
-            _passphraseWaitStartTime = Time.time;
+            var ctx = GameContext.Instance;
+            if (ctx == null) yield break;
 
-            var hud = GameContext.Instance?.Hud;
-            if (hud != null && hud.IsFree)
-                hud.SetSticky(promptAfterGateSpoken);
+            if (debugLogs) Debug.Log("[GateSystem] Gate line finished -> direct switch");
+
+            // Mark gate sequence done so external checks see "not busy" during switch
+            _waitingForPassphrase = false;
+            _gateTtsPlaying = false;
+
+            // Trigger transition + switch
+            var transition = FindObjectOfType<Reach.Framework.FX.ReachTransitionFX>();
+            if (transition != null)
+            {
+                var task = transition.PlayAndSwitchAsync(target);
+                yield return new WaitUntil(() => task.IsCompleted);
+                if (task.Exception != null)
+                    Debug.LogError($"[GateSystem] Transition error: {task.Exception}");
+            }
+            else
+            {
+                ctx.Perspective.TrySwitchTo(target);
+            }
+
+            CancelGate();
         }
 
         public async Task<bool> TryHandlePassphraseAsync(string wavPath)
         {
+            // Deprecated: gate now switches directly after gateTtsLine plays.
+            // SpeechInput.cs still calls this, but it no-ops now.
+            await Task.CompletedTask;
+            if (debugLogs) Debug.LogWarning("[GateSystem] TryHandlePassphraseAsync called but is deprecated. Switch happens via Interact now.");
+            return false;
+            // -- old code below kept for reference, never executes --
+            /*
+
             var ctx = GameContext.Instance;
             if (ctx == null) return false;
             if (_activeTarget == null || !_waitingForPassphrase || _gateTtsPlaying) return false;
@@ -360,6 +387,7 @@ namespace Reach.Framework.Interaction
             CancelGate(); // cleanup
             ctx.Hud?.ForceResetToIdle();
             return true;
+            */
         }
 
         // ============================================================

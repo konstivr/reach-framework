@@ -83,10 +83,16 @@ namespace Reach.Framework.Interaction
             if (gate != null && gateWaiting)
                 return;
 
-            // If gate is busy (TTS playing) but not waiting → press cancels the gate (safety escape).
+            // If intro audio is playing, Interact press is consumed by IntroAudioPlayer to skip it.
+            var intro = FindObjectOfType<Reach.Framework.Audio.IntroAudioPlayer>();
+            if (intro != null && intro.IsConsumingInput)
+            {
+                return;
+            }
+
+            // While gate is busy (TTS playing) -> ignore Interact presses (no spam, no cancel).
             if (gate != null && gateBusy)
             {
-                gate.CancelGate();
                 return;
             }
 

@@ -29,6 +29,13 @@ namespace Reach.Framework.Core
         [Tooltip("All characters available in this pack. The first one in this list is where the player starts.")]
         public List<CharacterDefinition> characters = new List<CharacterDefinition>();
 
+        [Header("Intro")]
+        [Tooltip("Audio narration that plays once when the scene loads. Pack-specific introduction/explanation. Optional - leave empty for no intro.")]
+        public AudioClip introAudio;
+
+        [Tooltip("Delay in seconds before the intro audio starts playing after scene load.")]
+        public float introDelaySeconds = 1f;
+
         [Header("Music")]
         [Tooltip("Layered music clips, added one by one as the player reaches each new perspective.")]
         public List<AudioClip> musicLayers = new List<AudioClip>();
