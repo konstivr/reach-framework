@@ -75,7 +75,7 @@ namespace Reach.Framework.Core
         {
             if (animator == null) return;
             animator.SetFloat(_animIDSpeed, 0f);
-            animator.SetFloat(_animIDMotionSpeed, 0f);
+            animator.SetFloat(_animIDMotionSpeed, 1f);
         }
 
         void RotateTowards(PossessableCharacter target)

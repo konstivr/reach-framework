@@ -83,3 +83,12 @@ crashlytics-build.properties
 # Character bodies — too large for git, sync manually to other machines
 Assets/_Packs/*/Characters/bodys/
 Assets/_Packs/*/Characters/bodys.meta
+
+# CC plugin output: large FBX files only (regenerable from bodys/)
+Assets/_Packs/*/Characters/*_char/*.Fbx
+Assets/_Packs/*/Characters/*_char/*.Fbx.meta
+
+# CC plugin output folders — regenerable via Reallusion → Build Materials
+# Bodies in bodys/ are the source, plugin regenerates the rest
+Assets/_Packs/*/Characters/*_char/
+Assets/_Packs/*/Characters/*_char.meta
