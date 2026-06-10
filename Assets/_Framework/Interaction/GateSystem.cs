@@ -156,6 +156,8 @@ namespace Reach.Framework.Interaction
             {
                 if (c == null || !c.IsValid) continue;
                 if (c == current) continue;
+                // Neutral starter chars cannot be switched TO (cannot go back to observer once left).
+                if (c.Definition != null && c.Definition.isNeutralStarter) continue;
                 // Visited characters can be revisited — no filter here.
 
                 float sqr = (c.transform.position - from).sqrMagnitude;
@@ -270,6 +272,8 @@ namespace Reach.Framework.Interaction
             if (clip != null)
             {
                 var src = GetOrCreateGateAudioSource(target);
+                var intro = UnityEngine.Object.FindObjectOfType<Reach.Framework.Audio.IntroAudioPlayer>();
+                if (intro != null) intro.Stop();
                 src.PlayOneShot(clip);
             }
 

@@ -13,6 +13,10 @@ namespace Reach.Framework.Core
     )]
     public class CharacterDefinition : ScriptableObject
     {
+        [Header("Observer Mode")]
+        [Tooltip("If true: this character is a neutral starter. Cannot speak, cannot interact with objects, cannot be switched back to once left.")]
+        public bool isNeutralStarter = false;
+
         [Header("Identity")]
         [Tooltip("Human-readable name shown in debug logs and (optionally) in HUD.")]
         public string displayName = "Unnamed";

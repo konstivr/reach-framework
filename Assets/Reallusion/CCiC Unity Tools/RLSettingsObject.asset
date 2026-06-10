@@ -15,7 +15,7 @@ MonoBehaviour:
   showOnStartup: 1
   ignoreAllErrors: 0
   checkForUpdates: 1
-  updateWindowShownOnce: 0
+  updateWindowShownOnce: 1
   postInstallShowUpdateWindow: 0
   postInstallShowPopupNotWindow: 0
   criticalUpdateRequired: 0
@@ -29,7 +29,7 @@ MonoBehaviour:
   performPostInstallationRuntimeCheck: 0
   updateMessage: 
   updateAvailable: 0
-  lastUpdateCheck: 639146017258121420
+  lastUpdateCheck: 639165977150674580
   jsonTagName: 2.2.6
   jsonHtmlUrl: https://github.com/soupday/CCiC-Unity-Tools/releases/tag/2.2.6
   jsonPublishedAt: 2026-04-07T20:05:42Z
@@ -170,7 +170,7 @@ MonoBehaviour:
   runtimeToolVersion: 
   installedRuntimeRevision: 0
   showProps: 1
-  lastExportPath: 
+  lastExportPath: /Users/kvrinsum/reach-framework/RL_DataLink
   isClientLocal: 1
   lastSuccessfulHost: 
   lastTriedHosts: []

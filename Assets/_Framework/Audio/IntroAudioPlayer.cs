@@ -68,6 +68,14 @@ namespace Reach.Framework.Audio
             if (debugLogs) Debug.Log($"[IntroAudio] Playing '{clip.name}' ({clip.length:0.0}s)");
         }
 
+        public void Stop()
+        {
+            if (!_isPlaying) return;
+            if (_source != null && _source.isPlaying) _source.Stop();
+            _isPlaying = false;
+            if (debugLogs) Debug.Log("[IntroAudio] Stopped externally.");
+        }
+
         void Update()
         {
             if (!_isPlaying) return;

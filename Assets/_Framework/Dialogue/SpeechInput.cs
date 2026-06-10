@@ -87,6 +87,12 @@ namespace Reach.Framework.Dialogue
                     return;
                 }
 
+                // Neutral starter chars cannot speak (observer mode).
+                var perspNeutral = Reach.Framework.Core.GameContext.Instance?.Perspective?.Current;
+                if (perspNeutral != null && perspNeutral.Definition != null && perspNeutral.Definition.isNeutralStarter)
+                {
+                    return;
+                }
                 StartRecording();
             }
 

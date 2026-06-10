@@ -97,8 +97,16 @@ namespace Reach.Framework.Interaction
             }
 
             // Object has priority over gate-trigger.
-            if (inObjectRange && _nearestObject.TryInteract(current))
-                return;
+            // Neutral starter chars cannot interact with objects (observer mode).
+            bool isNeutral = current != null && current.Definition != null && current.Definition.isNeutralStarter;
+            if (!isNeutral && inObjectRange)
+            {
+                var introPlayer = UnityEngine.Object.FindObjectOfType<Reach.Framework.Audio.IntroAudioPlayer>();
+                if (introPlayer != null) introPlayer.Stop();
+
+                if (_nearestObject.TryInteract(current))
+                    return;
+            }
 
             // Else: try the gate.
             if (gate != null && gateHasTarget)

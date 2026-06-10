@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "com.soupday.cc3_unity_tools": "https://github.com/soupday/CCiC-Unity-Tools.git",
+    "com.unity.2d.sprite": "1.0.0",
     "com.unity.ai.navigation": "2.0.9",
     "com.unity.cinemachine": "3.1.6",
     "com.unity.cloud.gltfast": "6.18.0",

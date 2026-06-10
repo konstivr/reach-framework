@@ -45,6 +45,10 @@ namespace Reach.Framework.Core
 
         void Start()
         {
+            // Safety net: reset audio + time state in case we returned from a paused game
+            AudioListener.pause = false;
+            Time.timeScale = 1f;
+
             // Reset to default on every menu load
             PlayerPrefs.DeleteKey(PREF_KEY_SELECTED_CHAR);
 
@@ -147,8 +151,12 @@ namespace Reach.Framework.Core
 
         void OnPlayClicked()
         {
-            if (debugLogs) Debug.Log("[MainMenu] Play clicked");
-            ShowCharSelectPanel();
+            if (debugLogs) Debug.Log("[MainMenu] Play clicked -> loading game scene directly (Char 0 starts)");
+            // Bypass CharSelect: PREF_KEY remains unset -> PerspectiveManager falls back to StoryPack.StartCharacter (= Char 0, the neutral observer).
+            // CharSelect is now only accessible via Pause-Menu in-game.
+            PlayerPrefs.DeleteKey(PREF_KEY_SELECTED_CHAR);
+            PlayerPrefs.Save();
+            SceneManager.LoadScene(gameSceneName);
         }
 
         void OnQuitClicked()

@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 334229f26435a4b34b988a7b2f3c1756, type: 3}
+  m_Name: unesco
+  m_EditorClassIdentifier: Reach.Framework::Reach.Framework.Core.InteractableObjectDefinition
+  objectPrefab: {fileID: 0}
+  mode: 0
+  interactRadius: 3.5
+  promptText: Press (X) to Interact
+  secondStepPromptText: Press (X) again
+  objectImage: {fileID: 21300000, guid: 375fa4738cc344cd4b1fab1df8ba09f8, type: 3}
+  responsesPerCharacter:
+  - character: {fileID: 11400000, guid: 78172e35dda5749aaae92f0f0cca8f9c, type: 2}
+    responseText: Listen closely to what the report has to say
+    responseDurationSeconds: 2.5
+    audioClip: {fileID: 8300000, guid: 1ddcfe36067224b9db59c5f6be413fa2, type: 3}
+    firstStepAudioClip: {fileID: 0}
+    audioVolume: 1
+  - character: {fileID: 11400000, guid: a41fa3b66b2094405b05480020c30a30, type: 2}
+    responseText: Listen closely to what the report has to say
+    responseDurationSeconds: 2.5
+    audioClip: {fileID: 8300000, guid: fadb215f5f32542faad77e940efdcff5, type: 3}
+    firstStepAudioClip: {fileID: 0}
+    audioVolume: 1
+  - character: {fileID: 11400000, guid: 5bcf4b252b7cd48ffa7556663fb09376, type: 2}
+    responseText: Listen closely to what the report has to say
+    responseDurationSeconds: 2.5
+    audioClip: {fileID: 8300000, guid: efd958572340340da87dcb8841a1af1a, type: 3}
+    firstStepAudioClip: {fileID: 0}
+    audioVolume: 1
+  defaultResponse:
+    character: {fileID: 0}
+    responseText: 
+    responseDurationSeconds: 1.5
+    audioClip: {fileID: 0}
+    firstStepAudioClip: {fileID: 0}
+    audioVolume: 1
+  unlocksOutreach: 0

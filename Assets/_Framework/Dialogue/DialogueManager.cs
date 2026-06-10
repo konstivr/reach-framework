@@ -153,6 +153,8 @@ namespace Reach.Framework.Dialogue
             if (clip != null)
             {
                 var src = GetOrCreateVoiceSource(pm.Current);
+                var intro = UnityEngine.Object.FindObjectOfType<Reach.Framework.Audio.IntroAudioPlayer>();
+                if (intro != null) intro.Stop();
                 src.PlayOneShot(clip);
                 StartHudHold(src, clip);
             }

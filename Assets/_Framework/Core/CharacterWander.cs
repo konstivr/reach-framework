@@ -9,6 +9,16 @@ namespace Reach.Framework.Core
     [RequireComponent(typeof(CharacterController))]
     public class CharacterWander : MonoBehaviour
     {
+        [Header("Wander Area")]
+        [Tooltip("If false, this character will not wander at all (stands still in idle).")]
+        public bool wanderEnabled = true;
+
+        [Tooltip("Maximum distance from spawn position the character may wander. 0 = unlimited.")]
+        public float wanderRadius = 15f;
+
+        [Tooltip("Show wander radius as gizmo in Scene view.")]
+        public bool debugDrawRadius = true;
+
         [Header("Speed")]
         public float wanderSpeed = 1.8f;
         public float turnSpeed   = 240f;
@@ -54,10 +64,12 @@ namespace Reach.Framework.Core
         float _animSpeedBlend;
 
         CharacterController _controller;
+        Vector3 _spawnPosition;
 
         void Awake()
         {
             _controller = GetComponent<CharacterController>();
+            _spawnPosition = transform.position;
             if (animator == null) animator = GetComponent<Animator>();
             if (animator == null) animator = GetComponentInChildren<Animator>();
 
@@ -80,7 +92,13 @@ namespace Reach.Framework.Core
             GroundedCheck();
             ApplyGravity();
 
-            if (_state == State.Idle)
+            // If wander is disabled: stay in idle (no walking), but still apply gravity
+            if (!wanderEnabled)
+            {
+                if (_state != State.Idle) EnterIdle();
+                UpdateIdle();
+            }
+            else if (_state == State.Idle)
                 UpdateIdle();
             else
                 UpdateWalk();
@@ -123,10 +141,27 @@ namespace Reach.Framework.Core
         {
             _repickTimer -= Time.deltaTime;
 
+            // Radius leash: if outside wanderRadius, force direction toward spawn position
+            if (wanderRadius > 0f)
+            {
+                Vector3 fromSpawn = transform.position - _spawnPosition;
+                fromSpawn.y = 0f;
+                if (fromSpawn.sqrMagnitude > wanderRadius * wanderRadius)
+                {
+                    // Redirect: point home, ignore obstacle blocks for this corrective frame
+                    _worldDir = -fromSpawn.normalized;
+                    _repickTimer = Mathf.Max(0.1f, repickEverySeconds);
+                    // Skip the obstacle/repick logic below this frame
+                    goto MoveBlock;
+                }
+            }
+
             if (avoidObstacles && IsBlocked(_worldDir))
                 PickNewDirection();
             else if (_repickTimer <= 0f)
                 PickNewDirection();
+
+            MoveBlock:;
 
             if (_worldDir.sqrMagnitude > 0.001f)
             {
@@ -176,6 +211,14 @@ namespace Reach.Framework.Core
         {
             Vector3 origin = transform.position + Vector3.up * 0.25f;
             return Physics.Raycast(origin, dir, obstacleCheckDistance, obstacleLayers, QueryTriggerInteraction.Ignore);
+        }
+
+        void OnDrawGizmosSelected()
+        {
+            if (!debugDrawRadius || wanderRadius <= 0f) return;
+            Vector3 center = Application.isPlaying ? _spawnPosition : transform.position;
+            Gizmos.color = new Color(0.2f, 0.8f, 0.4f, 0.35f);
+            Gizmos.DrawWireSphere(center, wanderRadius);
         }
     }
 }
